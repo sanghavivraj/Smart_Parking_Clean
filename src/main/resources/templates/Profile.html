@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#1a1a1a] text-white min-h-screen font-[Manrope]">
+
+<div class="flex justify-center items-center mt-20">
+
+  <div class="bg-[#2a2a2a] p-10 rounded-xl shadow-lg w-[400px]">
+
+    <h2 class="text-3xl font-bold text-center mb-8">User Profile</h2>
+
+    <!-- USER DETAILS -->
+    <div class="space-y-5">
+
+      <div>
+        <p class="text-sm text-gray-400">Full Name</p>
+        <p class="text-lg font-semibold" th:text="${user.Username}"></p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400">Email</p>
+        <p class="text-lg font-semibold" th:text="${user.email}"></p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400">Phone</p>
+        <p class="text-lg font-semibold" th:text="${user.phone}"></p>
+      </div>
+
+
+    </div>
+
+    <!-- LOGOUT BUTTON -->
+    <div class="mt-10 text-center">
+      <a href="/logout"
+         class="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-full text-white font-bold transition">
+        Logout
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
