@@ -6,6 +6,11 @@ WORKDIR /app
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
+
+# Give execute permission to mvnw (IMPORTANT FIX)
+RUN chmod +x mvnw
+
+# Download dependencies
 RUN ./mvnw dependency:go-offline
 
 # Copy source code
@@ -18,10 +23,8 @@ RUN ./mvnw -B package -DskipTests
 FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 
-# Copy the jar from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port (Render injects $PORT)
 EXPOSE 8080
 
 CMD ["java", "-jar", "app.jar"]
