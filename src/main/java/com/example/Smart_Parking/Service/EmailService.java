@@ -18,7 +18,7 @@ public class EmailService {
     public void sendVerificationEmail(String toEmail, String token) {
         String apiKey = System.getenv("BREVO_API_KEY");
         if (apiKey == null || apiKey.isEmpty()) {
-            throw new RuntimeException("BREVO_API_KEY not set in environment");
+            throw new RuntimeException("BREVO_API_KEY not set");
         }
 
         String domain = System.getenv("APP_DOMAIN");
@@ -26,51 +26,31 @@ public class EmailService {
             domain = "localhost:8080";
         }
 
-        String verifyUrl = "https://" + domain + "/verify-email-submit?email=" + urlEncode(toEmail) + "&token=" + urlEncode(token);
+        String verifyUrl = "https://" + domain + "/verify-email-submit?email="
+                + toEmail + "&token=" + token;
 
-        String jsonBody = "{"
-                + "\"sender\": { \"email\": \"noreply@smartparking.com\", \"name\": \"Smart Parking\" },"
-                + "\"to\": [ { \"email\": \"" + escapeJson(toEmail) + "\" } ],"
-                + "\"subject\": \"Smart Parking - Verify Your Email\","
-                + "\"htmlContent\": \"<p>Your verification code is: <b>" + escapeJson(token) + "</b></p>"
-                + "<p><a href=\\\"" + escapeJson(verifyUrl) + "\\\">Click to verify</a></p>\""
+        String json = "{"
+                + "\"sender\":{\"email\":\"noreply@smartparking.com\",\"name\":\"Smart Parking\"},"
+                + "\"to\":[{\"email\":\"" + toEmail + "\"}],"
+                + "\"subject\":\"Smart Parking - Verify Email\","
+                + "\"htmlContent\":\"<p>Your verification code is: <b>" + token + "</b></p>"
+                + "<p><a href='" + verifyUrl + "'>Click to verify</a></p>\""
                 + "}";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
                 .timeout(Duration.ofSeconds(10))
                 .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
                 .header("api-key", apiKey)
-                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
         try {
             HttpResponse<String> resp = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            int status = resp.statusCode();
-            if (status >= 200 && status < 300) {
-                System.out.println("Verification Email Sent via Brevo API to " + toEmail);
-            } else {
-                System.err.println("Brevo API returned status " + status + " body: " + resp.body());
-                throw new RuntimeException("Brevo API error: " + status);
-            }
+            System.out.println("BREVO RESPONSE = " + resp.statusCode() + " BODY = " + resp.body());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
-        }
-    }
-
-    // very small helpers
-    private static String escapeJson(String s) {
-        if (s == null) return "";
-        return s.replace("\\", "\\\\").replace("\"", "\\\"");
-    }
-
-    private static String urlEncode(String s) {
-        try {
-            return java.net.URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            return s;
+            throw new RuntimeException("Email sending failed: " + e.getMessage());
         }
     }
 }
