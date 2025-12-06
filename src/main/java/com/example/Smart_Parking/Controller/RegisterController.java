@@ -35,6 +35,7 @@ public class RegisterController {
     public String registerSubmit(@ModelAttribute("userForm") @Valid User userForm,
                                  BindingResult br,
                                  Model model) {
+
         if (br.hasErrors()) {
             return "Register";
         }
@@ -45,11 +46,23 @@ public class RegisterController {
             return "Register";
         }
 
-        // Generate OTP and send to email
+        // Generate OTP token
         String token = verificationService.generateToken(userForm.getEmail());
-        emailService.sendVerificationEmail(userForm.getEmail(), token);
+        if (token == null) {
+            model.addAttribute("error", "Unable to generate verification token.");
+            return "Register";
+        }
 
-        // Show OTP input form with email
+        // Send email safely
+        try {
+            emailService.sendVerificationEmail(userForm.getEmail(), token);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            model.addAttribute("error",
+                    "Failed to send email. Please try again later. Error: " + ex.getMessage());
+            return "Register";
+        }
+
         model.addAttribute("email", userForm.getEmail());
         return "VerifyEmail";
     }
@@ -58,6 +71,7 @@ public class RegisterController {
     public String verifyEmail(@RequestParam String email,
                               @RequestParam String token,
                               Model model) {
+
         boolean valid = verificationService.verifyToken(email, token);
         if (!valid) {
             model.addAttribute("email", email);
@@ -65,7 +79,6 @@ public class RegisterController {
             return "VerifyEmail";
         }
 
-        // Mark the user as verified
         userService.markEmailVerified(email);
         return "redirect:/Userlogin";
     }

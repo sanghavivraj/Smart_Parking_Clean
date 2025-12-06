@@ -12,16 +12,35 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     public void sendVerificationEmail(String toEmail, String token) {
-        String subject = "Your SmartParking Verification Code";
-        String text = String.format(
-                "Your verification code is: %s\n\nEnter this code in the app to verify your email.\n(It expires in 10 Min.)",
-                token
-        );
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
+        // Get deployed domain from Railway variables
+        String domain = System.getenv("APP_DOMAIN");
+        if (domain == null || domain.isEmpty()) {
+            domain = "localhost:8080"; // fallback (local)
+        }
+
+        String verifyUrl =
+                "https://" + domain + "/verify-email-submit?email=" + toEmail + "&token=" + token;
+
+        String subject = "Smart Parking - Verify Your Email";
+
+        String text = "Your verification code is: " + token +
+                "\n\nClick to verify (recommended):\n" + verifyUrl +
+                "\n\nThis code expires in 10 minutes.";
+
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject(subject);
+            message.setText(text);
+
+            mailSender.send(message);
+
+            System.out.println("Verification email sent to " + toEmail);
+
+        } catch (Exception e) {
+            System.out.println("EMAIL ERROR: " + e.getMessage());
+            throw new RuntimeException("Failed to send verification email", e);
+        }
     }
 }
