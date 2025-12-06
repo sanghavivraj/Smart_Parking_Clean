@@ -5,13 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reserve Parking Spot</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Manrope', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
 
         body {
             background-color: #0d0d0d;
@@ -38,22 +34,10 @@
             color: white;
         }
 
-        h2 {
-            text-align: center;
-            color: #00ffff;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            font-weight: 800;
-        }
+        h2 { text-align: center; color: #00ffff; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; }
+        label { display: block; margin-bottom: 0.4rem; font-weight: 600; color: #ccc; }
 
-        label {
-            display: block;
-            margin-bottom: 0.4rem;
-            font-weight: 600;
-            color: #ccc;
-        }
-
-        input, select {
+        input {
             width: 100%;
             padding: 0.75rem;
             margin-bottom: 1.2rem;
@@ -64,11 +48,7 @@
             font-size: 1rem;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #00ffff;
-            background-color: #2d2d2d;
-        }
+        input:focus { outline: none; border-color: #00ffff; }
 
         button {
             width: 100%;
@@ -80,52 +60,22 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: 0.3s ease;
         }
 
-        button:hover {
-            background-color: #66f5ff;
-        }
-
-        .back-link {
-            margin-top: 1rem;
-            text-align: center;
-        }
-
-        .back-link a {
-            color: #00ffff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .back-link a:hover {
-            text-decoration: underline;
-        }
-
-        .message {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #00ff99;
-        }
-
-        .error {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #ff5e5e;
-        }
+        button:hover { background-color: #66f5ff; }
     </style>
 </head>
-<body>
 
+<body>
 
 <div class="form-container">
     <h2>Check Slot Availability</h2>
+
     <form th:action="@{/reserve/check}" method="post">
+
         <label for="vehicleNumber">Vehicle Number</label>
-        <input type="text"
-               id="vehicleNumber"
-               name="vehicleNumber"
-               required />
+        <input type="text" id="vehicleNumber" name="vehicleNumber" required />
 
         <label for="date">Reservation Date</label>
         <input type="date"
@@ -135,22 +85,16 @@
                th:value="${today}"
                required />
 
-
         <label for="startTime">Start Time</label>
         <input type="time"
                id="startTime"
                name="startTime"
                th:value="${nowTime}"
+               step="1"
                required />
-
 
         <label for="durationHours">Duration (in hours)</label>
-        <input type="number"
-               id="durationHours"
-               name="durationHours"
-               min="1"
-               max="24"
-               required />
+        <input type="number" id="durationHours" name="durationHours" min="1" max="24" required />
 
         <button type="submit">Check Availability</button>
     </form>
