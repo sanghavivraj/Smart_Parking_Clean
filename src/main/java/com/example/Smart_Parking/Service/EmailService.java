@@ -15,6 +15,7 @@ public class EmailService {
     public void sendVerificationEmail(String toEmail, String token) {
 
         String apiKey = System.getenv("RESEND_API_KEY");
+        System.out.println("DEBUG_RESEND_KEY=" + apiKey);
 
         // 🔥 Railway fix: try Java-prefixed variable
         if (apiKey == null) {
