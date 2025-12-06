@@ -53,6 +53,9 @@ public class RegisterController {
             return "Register";
         }
 
+        System.out.println("DEBUG RESEND_API_KEY = " + System.getenv("RESEND_API_KEY"));
+        System.out.println("DEBUG JAVA_RESEND_API_KEY = " + System.getenv("JAVA_RESEND_API_KEY"));
+
         // Send email safely
         try {
             emailService.sendVerificationEmail(userForm.getEmail(), token);

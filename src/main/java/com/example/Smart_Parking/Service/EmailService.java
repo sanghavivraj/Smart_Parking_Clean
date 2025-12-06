@@ -15,9 +15,15 @@ public class EmailService {
     public void sendVerificationEmail(String toEmail, String token) {
 
         String apiKey = System.getenv("RESEND_API_KEY");
-        if (apiKey == null) apiKey = System.getenv("JAVA_RESEND_API_KEY");
 
-        if (apiKey == null) throw new RuntimeException("Resend API key not found!");
+        // 🔥 Railway fix: try Java-prefixed variable
+        if (apiKey == null) {
+            apiKey = System.getenv("JAVA_RESEND_API_KEY");
+        }
+
+        if (apiKey == null) {
+            throw new RuntimeException("Resend API key not found in environment variables!");
+        }
 
         String body = """
         {
