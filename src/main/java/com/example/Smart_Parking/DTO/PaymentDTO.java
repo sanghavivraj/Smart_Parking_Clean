@@ -46,7 +46,7 @@ public class PaymentDTO {
         this.amount = amount;
     }
 
-    public String getMethod() {
+    public PaymentMethod getMethod() {
         return method;
     }
 
