@@ -4,8 +4,4 @@ public enum PaymentMethod {
     UPI,
     CARD,
     CASH;
-
-    public static PaymentMethod fromString(String value) {
-        return PaymentMethod.valueOf(value.trim().toUpperCase());
-    }
 }

@@ -71,81 +71,87 @@ public class PaymentController {
     // ---------------------------- MAKE PAYMENT ----------------------------
     @PostMapping("/make")
     public String makePayment(@ModelAttribute PaymentDTO dto,
-                              Model model,
-                              HttpSession session) {
+                              HttpSession session,
+                              Model model) {
 
-        // Save temp for redirect
-        session.setAttribute("userId", dto.getUserId());
-        session.setAttribute("reserveId", dto.getReserveId());
+        try {
+            // Convert String → Enum safely
+            PaymentMethod method = PaymentMethod.valueOf(dto.getMethod().trim().toUpperCase());
+            dto.setMethod(String.valueOf(method));
 
-        // CASE 1: UPI or CASH → Offline save
-        // OFFLINE: UPI or CASH
-        // Convert String → Enum safely
-        PaymentMethod method = PaymentMethod.fromString(dto.getMethod());
+            // Save IDs in session for Stripe success
+            session.setAttribute("reserveId", dto.getReserveId());
+            session.setAttribute("userId", dto.getUserId());
 
+            // -------------------------
+            // CASE 1: STRIPE PAYMENT
+            // -------------------------
+            if (method == PaymentMethod.CARD) {
 
-// OFFLINE METHODS
-        if (method == PaymentMethod.UPI || method == PaymentMethod.CASH) {
-
-            Optional<User> userOpt = userRepo.findById(dto.getUserId());
-            Optional<Reserve> reserveOpt = reserveRepo.findById(dto.getReserveId());
-
-            Payment payment = new Payment();
-            payment.setUser(userOpt.get());
-            payment.setReservation(reserveOpt.get());
-            payment.setAmount(dto.getAmount());
-            payment.setPaymentDate(LocalDateTime.now());
-            payment.setStatus(PaymentStatus.SUCCESS);
-            payment.setMethod(method);
-
-            if (method == PaymentMethod.UPI) {
-                payment.setUpiTransactionId(dto.getUpiTransactionId());
-            }
-
-            Payment saved = paymentRepo.save(payment);
-            return "redirect:/Payment/success/" + saved.getPayment_id();
-        }
-
-
-
-        // CASE 2: CARD → STRIPE CHECKOUT SESSION
-        else {
-            try {
-                Stripe.apiKey = stripeSecretKey;
-
-                SessionCreateParams params =
-                        SessionCreateParams.builder()
-                                .setMode(SessionCreateParams.Mode.PAYMENT)
-                                .setSuccessUrl(successUrl + "?session_id={CHECKOUT_SESSION_ID}")
-                                .setCancelUrl(cancelUrl)
-                                .addLineItem(
-                                        SessionCreateParams.LineItem.builder()
-                                                .setQuantity(1L)
-                                                .setPriceData(
-                                                        SessionCreateParams.LineItem.PriceData.builder()
-                                                                .setCurrency("inr")
-                                                                .setUnitAmount((long) (dto.getAmount() * 100))
-                                                                .setProductData(
-                                                                        SessionCreateParams.LineItem.PriceData.ProductData
-                                                                                .builder()
-                                                                                .setName("Smart Parking Fee")
-                                                                                .build()
-                                                                )
-                                                                .build()
-                                                )
-                                                .build()
-                                )
-                                .build();
+                SessionCreateParams params = SessionCreateParams.builder()
+                        .setMode(SessionCreateParams.Mode.PAYMENT)
+                        .setSuccessUrl(successUrl + "?session_id={CHECKOUT_SESSION_ID}")
+                        .setCancelUrl(cancelUrl)
+                        .addLineItem(
+                                SessionCreateParams.LineItem.builder()
+                                        .setQuantity(1L)
+                                        .setPriceData(
+                                                SessionCreateParams.LineItem.PriceData.builder()
+                                                        .setCurrency("inr")
+                                                        .setUnitAmount((long) (dto.getAmount() * 100))
+                                                        .setProductData(
+                                                                SessionCreateParams.LineItem.PriceData.ProductData
+                                                                        .builder()
+                                                                        .setName("Smart Parking Fee")
+                                                                        .build()
+                                                        )
+                                                        .build()
+                                        )
+                                        .build()
+                        )
+                        .build();
 
                 Session stripeSession = Session.create(params);
-                return "redirect:" + stripeSession.getUrl();
 
-            } catch (StripeException e) {
-                model.addAttribute("error", "Stripe error: " + e.getMessage());
-                model.addAttribute("payment", dto);
-                return "Payment";
+                return "redirect:" + stripeSession.getUrl();
             }
+
+            // -------------------------
+            // CASE 2: UPI PAYMENT
+            // -------------------------
+            if (method == PaymentMethod.UPI) {
+                return saveOfflinePayment(dto, PaymentMethod.UPI);
+            }
+
+            // -------------------------
+            // CASE 3: CASH PAYMENT
+            // -------------------------
+            return saveOfflinePayment(dto, PaymentMethod.CASH);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Payment error: " + e.getMessage());
+            model.addAttribute("payment", dto);
+            return "Payment";
         }
+    }
+
+    private String saveOfflinePayment(PaymentDTO dto, PaymentMethod paymentMethod) {
+        Optional<User> user = userRepo.findById(dto.getUserId());
+        Optional<Reserve> reserve = reserveRepo.findById(dto.getReserveId());
+
+        Payment payment = new Payment();
+        payment.setUser(user.get());
+        payment.setReservation(reserve.get());
+        payment.setAmount(dto.getAmount());
+        payment.setMethod(paymentMethod);
+        payment.setStatus(PaymentStatus.SUCCESS);
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setUpiTransactionId(dto.getUpiTransactionId());
+
+        Payment saved = paymentRepo.save(payment);
+
+        return "redirect:/Payment/success/" + saved.getPayment_id();
     }
 
 

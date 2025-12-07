@@ -7,13 +7,13 @@ public class PaymentDTO {
     private Long userId;
     private Long reserveId;
     private Double amount;
-    private PaymentMethod method;
+    private String method;
     private String upiTransactionId;
 
     // Constructors
     public PaymentDTO() {}
 
-    public PaymentDTO(Long userId, Long reserveId, Double amount, PaymentMethod method, String upiTransactionId) {
+    public PaymentDTO(Long userId, Long reserveId, Double amount, String method, String upiTransactionId) {
         this.userId = userId;
         this.reserveId = reserveId;
         this.amount = amount;
@@ -46,12 +46,12 @@ public class PaymentDTO {
         this.amount = amount;
     }
 
-    public PaymentMethod getMethod() {
+    public String getMethod() {
         return method;
     }
 
-    public void setMethod(PaymentMethod method) {
-        this.method = method;
+    public void setMethod(String method) {
+        this.method = String.valueOf(method);
     }
 
     public String getUpiTransactionId() {
