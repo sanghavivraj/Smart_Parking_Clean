@@ -16,8 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.net.URL;
 import java.util.Locale;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/Payment")
@@ -44,7 +45,9 @@ public class PaymentController {
         this.reserveRepo = reserveRepo;
     }
 
-    // show payment page
+    // ------------------------------------------------------
+    // SHOW PAYMENT PAGE
+    // ------------------------------------------------------
     @GetMapping
     public String showPaymentForm(@RequestParam("userId") Long userId,
                                   @RequestParam("reserveId") Long reserveId,
@@ -68,13 +71,14 @@ public class PaymentController {
         return "Payment";
     }
 
-    // make payment (Stripe or offline)
+    // ------------------------------------------------------
+    // MAKE PAYMENT (STRIPE OR OFFLINE)
+    // ------------------------------------------------------
     @PostMapping("/make")
     public String makePayment(@ModelAttribute PaymentDTO dto,
                               HttpSession session,
                               Model model) {
 
-        // DEBUG: log what we received
         System.out.println("PAYMENT SUBMIT -> userId=" + dto.getUserId()
                 + " reserveId=" + dto.getReserveId()
                 + " amount=" + dto.getAmount()
@@ -84,11 +88,11 @@ public class PaymentController {
         System.out.println("DEBUG SUCCESS_URL = " + successUrl);
         System.out.println("DEBUG CANCEL_URL = " + cancelUrl);
 
-        // Save ids in session for success handler (Stripe)
+        // Session store for Stripe success callback
         session.setAttribute("reserveId", dto.getReserveId());
         session.setAttribute("userId", dto.getUserId());
 
-        // Defensive checks
+        // Validate method
         if (dto.getMethod() == null || dto.getMethod().trim().isEmpty()) {
             model.addAttribute("error", "Please select a payment method.");
             model.addAttribute("payment", dto);
@@ -97,22 +101,36 @@ public class PaymentController {
 
         String methodStr = dto.getMethod().trim().toUpperCase(Locale.ROOT);
 
-        // Offline payments (UPI or CASH)
+        // OFFLINE PAYMENT
         if ("UPI".equals(methodStr) || "CASH".equals(methodStr)) {
             return saveOfflinePayment(dto, PaymentMethod.CASH);
         }
 
-        // CARD => Stripe Checkout
+        // CARD PAYMENT (STRIPE)
         if ("CARD".equals(methodStr)) {
             try {
-                // Ensure stripe key is present
                 if (stripeSecretKey == null || stripeSecretKey.isBlank()) {
                     model.addAttribute("error", "Stripe secret key not configured.");
-                    model.addAttribute("payment", dto);
                     return "Payment";
                 }
 
                 Stripe.apiKey = stripeSecretKey;
+
+                // -------------------------------
+                // SANITIZE & VALIDATE URLS
+                // -------------------------------
+                successUrl = successUrl == null ? "" : successUrl.trim();
+                cancelUrl = cancelUrl == null ? "" : cancelUrl.trim();
+
+                try {
+                    new URL(successUrl);
+                    new URL(cancelUrl);
+                } catch (Exception ex) {
+                    System.out.println("INVALID URL >> success=" + successUrl + " cancel=" + cancelUrl);
+                    model.addAttribute("error", "Invalid Stripe redirect URLs.");
+                    return "Payment";
+                }
+                // -------------------------------
 
                 SessionCreateParams params =
                         SessionCreateParams.builder()
@@ -140,33 +158,31 @@ public class PaymentController {
 
                 Session stripeSession = Session.create(params);
 
-                // redirect user to stripe checkout
                 return "redirect:" + stripeSession.getUrl();
 
             } catch (StripeException e) {
                 e.printStackTrace();
                 model.addAttribute("error", "Stripe error: " + e.getMessage());
-                model.addAttribute("payment", dto);
                 return "Payment";
             } catch (Exception e) {
                 e.printStackTrace();
                 model.addAttribute("error", "Payment error: " + e.getMessage());
-                model.addAttribute("payment", dto);
                 return "Payment";
             }
         }
 
-        // unknown method
         model.addAttribute("error", "Unsupported payment method: " + dto.getMethod());
-        model.addAttribute("payment", dto);
         return "Payment";
     }
 
-    // Stripe success callback (reads session_id, saves payment)
+    // ------------------------------------------------------
+    // STRIPE SUCCESS CALLBACK
+    // ------------------------------------------------------
     @GetMapping("/success")
     public String stripeSuccess(@RequestParam("session_id") String sessionId, HttpSession httpSession) {
         try {
             Stripe.apiKey = stripeSecretKey;
+
             Session stripeSession = Session.retrieve(sessionId);
 
             Long reserveId = (Long) httpSession.getAttribute("reserveId");
@@ -189,6 +205,7 @@ public class PaymentController {
             payment.setPaymentDate(LocalDateTime.now());
 
             Payment saved = paymentRepo.save(payment);
+
             return "redirect:/Payment/success/" + saved.getPayment_id();
 
         } catch (Exception e) {
@@ -197,13 +214,14 @@ public class PaymentController {
         }
     }
 
-    // helper to persist offline payments
+    // ------------------------------------------------------
+    // SAVE OFFLINE PAYMENT
+    // ------------------------------------------------------
     private String saveOfflinePayment(PaymentDTO dto, PaymentMethod method) {
         Optional<User> userOpt = userRepo.findById(dto.getUserId());
         Optional<Reserve> reserveOpt = reserveRepo.findById(dto.getReserveId());
 
         if (userOpt.isEmpty() || reserveOpt.isEmpty()) {
-            // safe fallback (shouldn't happen if UI passed correct values)
             return "redirect:/reserve";
         }
 
@@ -214,7 +232,6 @@ public class PaymentController {
         payment.setMethod(method);
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setPaymentDate(LocalDateTime.now());
-
 
         Payment saved = paymentRepo.save(payment);
         return "redirect:/Payment/success/" + saved.getPayment_id();
