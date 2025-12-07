@@ -32,39 +32,24 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public String registerSubmit(@ModelAttribute("userForm") @Valid User userForm,
+    public String registerSubmit(@Valid @ModelAttribute("userForm") User userForm,
                                  BindingResult br,
                                  Model model) {
 
-        if (br.hasErrors()) {
+        if (br.hasErrors()) return "Register";
+
+        boolean ok = userService.register(userForm);
+
+        if (!ok) {
+            model.addAttribute("error", "Email already exists!");
             return "Register";
         }
 
-        boolean registered = userService.register(userForm);
-        if (!registered) {
-            model.addAttribute("error", "Email already exists.");
-            return "Register";
-        }
-
-        // Generate OTP token
+        // Generate OTP
         String token = verificationService.generateToken(userForm.getEmail());
-        if (token == null) {
-            model.addAttribute("error", "Unable to generate verification token.");
-            return "Register";
-        }
 
-        System.out.println("DEBUG RESEND_API_KEY = " + System.getenv("RESEND_API_KEY"));
-        System.out.println("DEBUG JAVA_RESEND_API_KEY = " + System.getenv("JAVA_RESEND_API_KEY"));
-
-        // Send email safely
-        try {
-            emailService.sendVerificationEmail(userForm.getEmail(), token);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            model.addAttribute("error",
-                    "Failed to send email. Please try again later. Error: " + ex.getMessage());
-            return "Register";
-        }
+        // Send email via SMTP
+        emailService.sendVerificationEmail(userForm.getEmail(), token);
 
         model.addAttribute("email", userForm.getEmail());
         return "VerifyEmail";
@@ -76,13 +61,16 @@ public class RegisterController {
                               Model model) {
 
         boolean valid = verificationService.verifyToken(email, token);
+
         if (!valid) {
             model.addAttribute("email", email);
-            model.addAttribute("error", "Invalid or expired verification code.");
+            model.addAttribute("error", "Invalid or expired OTP.");
             return "VerifyEmail";
         }
 
+        verificationService.invalidate(email);
         userService.markEmailVerified(email);
+
         return "redirect:/Userlogin";
     }
 }
