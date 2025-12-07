@@ -15,15 +15,12 @@ public class EmailService {
 
     public void sendVerificationEmail(String toEmail, String otp) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Smart Parking Email Verification");
-        message.setText(
-                "Your OTP is: " + otp +
-                        "\n\nThis code is valid for 10 minutes."
-        );
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(toEmail);
+        msg.setSubject("Smart Parking Verification Code");
+        msg.setText("Your OTP is: " + otp + "\n\nThis code is valid for 10 minutes.");
 
-        mailSender.send(message);
+        mailSender.send(msg);
 
         System.out.println("SMTP EMAIL SENT TO: " + toEmail);
     }

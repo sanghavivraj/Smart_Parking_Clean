@@ -32,28 +32,37 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public String registerSubmit(@Valid @ModelAttribute("userForm") User userForm,
+    public String registerSubmit(@ModelAttribute("userForm") @Valid User userForm,
                                  BindingResult br,
                                  Model model) {
 
-        if (br.hasErrors()) return "Register";
+        if (br.hasErrors()) {
+            return "Register";
+        }
 
-        boolean ok = userService.register(userForm);
+        boolean registered = userService.register(userForm);
 
-        if (!ok) {
-            model.addAttribute("error", "Email already exists!");
+        if (!registered) {
+            model.addAttribute("error", "Email already exists.");
             return "Register";
         }
 
         // Generate OTP
         String token = verificationService.generateToken(userForm.getEmail());
 
-        // Send email via SMTP
-        emailService.sendVerificationEmail(userForm.getEmail(), token);
+        // Send OTP via SMTP
+        try {
+            emailService.sendVerificationEmail(userForm.getEmail(), token);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            model.addAttribute("error", "Failed to send email via SMTP: " + ex.getMessage());
+            return "Register";
+        }
 
         model.addAttribute("email", userForm.getEmail());
         return "VerifyEmail";
     }
+
 
     @PostMapping("/verify-email-submit")
     public String verifyEmail(@RequestParam String email,
