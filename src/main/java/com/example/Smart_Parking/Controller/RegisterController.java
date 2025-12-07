@@ -35,6 +35,9 @@ public class RegisterController {
     public String registerSubmit(@ModelAttribute("userForm") @Valid User userForm,
                                  BindingResult br,
                                  Model model) {
+        System.out.println("SPRING_MAIL_USERNAME = " + System.getenv("SPRING_MAIL_USERNAME"));
+        System.out.println("SPRING_MAIL_PASSWORD = " + System.getenv("SPRING_MAIL_PASSWORD"));
+
 
         if (br.hasErrors()) {
             return "Register";
