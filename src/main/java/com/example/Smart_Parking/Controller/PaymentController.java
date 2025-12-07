@@ -81,6 +81,9 @@ public class PaymentController {
                 + " method=" + dto.getMethod()
                 + " upi=" + dto.getUpiTransactionId());
 
+        System.out.println("DEBUG SUCCESS_URL = " + successUrl);
+        System.out.println("DEBUG CANCEL_URL = " + cancelUrl);
+
         // Save ids in session for success handler (Stripe)
         session.setAttribute("reserveId", dto.getReserveId());
         session.setAttribute("userId", dto.getUserId());
