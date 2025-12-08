@@ -4,86 +4,178 @@
 <head>
   <meta charset="UTF-8">
   <title>User Profile - Smart Parking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     body {
         font-family: "Manrope", sans-serif;
-        background: radial-gradient(circle at top, #00ffff22, #000000 70%);
-        animation: bgMove 10s infinite alternate;
-    }
-
-    @keyframes bgMove {
-        0% { background-position: 0% 0%; }
-        100% { background-position: 100% 100%; }
+        background: linear-gradient(to bottom, #111111, #0d0d0d, #090909);
+        color: white;
     }
 
     .glass-card {
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(12px);
-        box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
-        border: 1px solid rgba(0, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
+        transition: 0.25s ease;
     }
 
     .glass-card:hover {
-        box-shadow: 0 0 40px rgba(0, 255, 255, 0.25);
+        border-color: rgba(124, 58, 237, 0.35);
+        box-shadow: 0 4px 40px rgba(124, 58, 237, 0.15);
+    }
+
+    .icon-circle {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
     }
   </style>
 </head>
 
-<body class="text-white min-h-screen">
+<body class="min-h-screen flex flex-col">
 
-<!-- MAIN WRAPPER -->
-<div class="flex justify-center items-center min-h-screen px-4">
+<!-- ================= HEADER ================= -->
+<header class="w-full bg-transparent">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
 
-  <!-- PROFILE CARD -->
-  <div class="glass-card p-10 rounded-2xl w-[420px] transition shadow-2xl">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/images/logo.png" alt="ParkSmart Logo" class="w-10 h-10 object-contain rounded" />
+        <span class="text-lg font-bold">Smart Parking</span>
+      </a>
 
-    <!-- ICON -->
+      <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="#" class="hover:text-white transition">Features</a>
+        <a href="/contact" class="hover:text-white transition">Contact Us</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="/profile" class="hidden sm:flex w-10 h-10 rounded-full bg-white justify-center items-center text-black hover:scale-105 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5
+                              19.5a8.25 8.25 0 1115 0v.75H4.5v-.75z" />
+          </svg>
+        </a>
+
+        <!-- Mobile -->
+        <button id="mobileToggle" class="md:hidden p-2 rounded text-gray-300 hover:bg-white/10">
+          <svg id="hamburger" class="w-6 h-6" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 8h16M4 16h16"/>
+          </svg>
+          <svg id="close" class="w-6 h-6 hidden" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="md:hidden hidden bg-black border-t border-gray-700">
+    <div class="px-4 py-3 space-y-3">
+      <a href="/" class="block text-gray-300 hover:text-white">Home</a>
+      <a href="#" class="block text-gray-300 hover:text-white">Features</a>
+      <a href="/contact" class="block text-gray-300 hover:text-white">Contact</a>
+
+      <div class="border-t border-gray-700 pt-3">
+        <a href="/profile" class="block w-full text-center bg-white text-black py-2 rounded font-semibold">
+          Profile
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- ================= PROFILE CARD ================= -->
+<div class="flex-1 flex justify-center items-center px-4 py-12">
+  <div class="glass-card p-10 rounded-2xl max-w-[420px] w-full">
+
     <div class="flex justify-center mb-6">
-      <div class="w-20 h-20 rounded-full bg-[#00ffff22] border border-[#00ffff55] flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-cyan-300" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor">
+      <div class="icon-circle w-20 h-20 rounded-full flex justify-center items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="white">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-4.418 0-8 2.015-8 4.5V21h16v-2.5c0-2.485-3.582-4.5-8-4.5z" />
         </svg>
       </div>
     </div>
 
-    <!-- TITLE -->
-    <h2 class="text-3xl font-bold text-center mb-8 tracking-wide">User Profile</h2>
+    <h2 class="text-3xl font-bold text-center mb-8">User Profile</h2>
 
-    <!-- USER DETAILS -->
+    <!-- User details -->
     <div class="space-y-6">
 
       <div>
-        <p class="text-sm text-gray-400">Full Name</p>
-        <p class="text-xl font-semibold mt-1" th:text="${user.Username}">Ayush Shah</p>
+        <p class="text-gray-400 text-sm">Full Name</p>
+        <p class="text-xl font-semibold mt-1" th:text="${user.username}">Ayush Shah</p>
       </div>
 
       <div>
-        <p class="text-sm text-gray-400">Email</p>
+        <p class="text-gray-400 text-sm">Email</p>
         <p class="text-xl font-semibold mt-1" th:text="${user.email}">ayush@gmail.com</p>
       </div>
 
       <div>
-        <p class="text-sm text-gray-400">Phone</p>
+        <p class="text-gray-400 text-sm">Phone</p>
         <p class="text-xl font-semibold mt-1" th:text="${user.phone}">Not Provided</p>
       </div>
 
     </div>
 
-    <!-- LOGOUT -->
-    <div class="mt-10 text-center">
+    <!-- BUTTONS -->
+    <div class="mt-10 flex flex-col gap-4">
+
+      <a href="/profile/edit"
+         class="bg-blue-500 hover:bg-blue-600 px-6 py-2.5 rounded-full text-center font-semibold transition">
+        Edit Profile
+      </a>
+
       <a href="/logout"
-         class="bg-red-500 hover:bg-red-600 px-6 py-2.5 rounded-full text-white font-semibold shadow-md transition transform hover:scale-[1.05]">
+         class="bg-red-500 hover:bg-red-600 px-6 py-2.5 rounded-full text-center font-semibold transition">
         Logout
       </a>
+
     </div>
 
   </div>
-
 </div>
+
+
+<!-- ================= FOOTER ================= -->
+<footer class="text-center py-10 text-gray-400 text-sm border-t border-gray-700">
+  <div class="flex justify-center gap-6 mb-4">
+    <a href="/privacy" class="hover:text-white">Privacy Policy</a>
+    <a href="/terms" class="hover:text-white">Terms of Service</a>
+    <a href="/contact" class="hover:text-white">Contact Us</a>
+  </div>
+  <p>&copy; <span id="year"></span> Smart_Parking. All rights reserved.</p>
+</footer>
+
+<script>
+  // Mobile Menu Toggle
+  const toggle = document.getElementById("mobileToggle");
+  const menu = document.getElementById("mobileMenu");
+  const ham = document.getElementById("hamburger");
+  const close = document.getElementById("close");
+
+  toggle.addEventListener("click", () => {
+      const isHidden = menu.classList.contains("hidden");
+      menu.classList.toggle("hidden");
+
+      ham.classList.toggle("hidden", !isHidden);
+      close.classList.toggle("hidden", isHidden);
+  });
+
+  // Footer year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
