@@ -16,4 +16,5 @@ public class UserFeedbackService {
     public void save(String email, String message) {
         repo.save(new UserFeedback(email, message));
     }
+
 }

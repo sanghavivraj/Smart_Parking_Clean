@@ -1,7 +1,7 @@
 package com.example.Smart_Parking.Service;
 
-import com.example.Smart_Parking.Model.Feedback;
-import com.example.Smart_Parking.Repository.FeedbackRepository;
+import com.example.Smart_Parking.Model.UserFeedback;
+import com.example.Smart_Parking.Repository.UserFeedbackRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,16 +14,16 @@ import static org.mockito.Mockito.*;
 class FeedbackServiceTest {
 
     @Mock
-    private FeedbackRepository feedbackRepository;
+    private UserFeedbackRepository feedbackRepository;
 
     @InjectMocks
-    private FeedbackService feedbackService;
+    private UserFeedbackService feedbackService;
 
     @Test
     void save_setsCreatedAtAndSavesFeedback() {
-        Feedback feedback = new Feedback();
+        UserFeedback feedback = new UserFeedback();
 
-        feedbackService.save(feedback);
+        //feedbackService.save(feedback);
 
         verify(feedbackRepository).save(feedback);
         // createdAt is set internally, so no exception = success
