@@ -14,36 +14,37 @@ public class EmailService {
     @Value("${MAILTRAP_API_TOKEN}")
     private String apiToken;
 
-    @Value("${MAILTRAP_SENDER_EMAIL}")
-    private String senderEmail;
+    @Value("${MAILTRAP_INBOX_ID}")
+    private String inboxId;
 
     public void sendVerificationEmail(String toEmail, String otp) {
 
+        String body = """
+        {
+            "to": ["%s"],
+            "subject": "Smart Parking Verification Code",
+            "text": "Your OTP is: %s"
+        }
+        """.formatted(toEmail, otp);
+
+        String url = "https://sandbox.api.mailtrap.io/api/send/" + inboxId;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Api-Token", apiToken)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
         try {
-            String jsonBody = """
-                {
-                  "from": { "email": "%s" },
-                  "to": [{ "email": "%s" }],
-                  "subject": "Your Smart Parking OTP",
-                  "text": "Your OTP is: %s"
-                }
-            """.formatted(senderEmail, toEmail, otp);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://send.api.mailtrap.io/api/send"))
-                    .header("Authorization", "Bearer " + apiToken)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .build();
-
-            HttpClient.newHttpClient()
+            HttpResponse<String> response = HttpClient.newHttpClient()
                     .send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("MAILTRAP API EMAIL SENT TO " + toEmail);
+            System.out.println("MAILTRAP API STATUS: " + response.statusCode());
+            System.out.println("MAILTRAP API RESPONSE: " + response.body());
 
         } catch (Exception e) {
-            System.out.println("MAILTRAP API ERROR = " + e.getMessage());
-            throw new RuntimeException("Email sending failed", e);
+            throw new RuntimeException("Mailtrap API failed", e);
         }
     }
 }
