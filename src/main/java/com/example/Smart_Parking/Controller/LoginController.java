@@ -22,26 +22,27 @@ public class LoginController {
         return "redirect:/Home";
     }
 
-    @GetMapping("/Userlogin")
-    public String loginForm() {
-        return "Userlogin";
+    @GetMapping("/login")
+    public String loginPage() {
+        return "Userlogin";   // Your login page name
     }
 
-    @PostMapping("/Userlogin")
+    @PostMapping("/login")
     public String loginSubmit(@RequestParam String username,
                               @RequestParam String password,
                               HttpSession session) {
-        // 1) authenticate and get the User instance
+
         Optional<User> maybeUser = svc.authenticateAndGetUser(username, password);
 
-        // 2) if present, stash the actual User in session
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
+
+            // ★ IMPORTANT: store user in session
             session.setAttribute("loggedUser", user);
+
             return "redirect:/Home";
         }
 
-        // 3) otherwise, send them to the error page
         return "redirect:/loginError";
     }
 

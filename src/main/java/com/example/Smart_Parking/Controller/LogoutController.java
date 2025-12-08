@@ -9,7 +9,7 @@ public class LogoutController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();  // END SESSION
-        return "redirect:/Home";   // REDIRECT TO HOME PAGE
+        session.invalidate();  // End session
+        return "redirect:/Home";   // Redirect to homepage
     }
 }
