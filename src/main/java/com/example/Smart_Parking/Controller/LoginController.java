@@ -22,7 +22,7 @@ public class LoginController {
         return "redirect:/Home";
     }
 
-    @GetMapping("/login")
+    @GetMapping("/Userlogin")
     public String loginPage() {
         return "Userlogin";   // Your login page name
     }
