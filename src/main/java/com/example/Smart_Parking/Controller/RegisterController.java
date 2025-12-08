@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.core.env.Environment;
+
 
 @Controller
 public class RegisterController {
@@ -16,13 +18,16 @@ public class RegisterController {
     private final UserService userService;
     private final EmailService emailService;
     private final VerificationService verificationService;
+    private final Environment env;
 
     public RegisterController(UserService userService,
                               EmailService emailService,
-                              VerificationService verificationService) {
+                              VerificationService verificationService,
+                              Environment env) {
         this.userService = userService;
         this.emailService = emailService;
         this.verificationService = verificationService;
+        this.env = env;
     }
 
     @GetMapping("/register")
@@ -37,10 +42,10 @@ public class RegisterController {
                                  Model model) {
 
         // DEBUG (masked) - remove for production
-        String debugUser = System.getenv("SPRING_MAIL_USERNAME");
-        boolean pwLoaded = System.getenv("SPRING_MAIL_PASSWORD") != null;
-        System.out.println("DEBUG SPRING_MAIL_USERNAME = " + (debugUser == null ? "NULL" : debugUser));
-        System.out.println("DEBUG SPRING_MAIL_PASSWORD = " + (pwLoaded ? "LOADED" : "NULL"));
+        System.out.println("ENV SPRING_MAIL_USERNAME = " + System.getenv("SPRING_MAIL_USERNAME"));
+        System.out.println("SPRING mail.username = " + env.getProperty("spring.mail.username"));
+        System.out.println("SPRING mail.password = " + (env.getProperty("spring.mail.password") != null ? "LOADED" : "NULL"));
+
 
         if (br.hasErrors()) {
             return "Register";

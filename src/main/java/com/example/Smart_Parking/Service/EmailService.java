@@ -15,21 +15,29 @@ public class EmailService {
 
     public void sendVerificationEmail(String toEmail, String otp) {
 
-            // Debug: Check if Spring Boot loaded SMTP credentials
-            String u1 = System.getenv("SPRING_MAIL_USERNAME");
-            String p1 = System.getenv("SPRING_MAIL_PASSWORD");
+        // Debug: Check environment variables
+        System.out.println("ENV SPRING_MAIL_USERNAME = " + System.getenv("SPRING_MAIL_USERNAME"));
+        System.out.println("ENV SPRING_MAIL_PASSWORD = " +
+                (System.getenv("SPRING_MAIL_PASSWORD") != null ? "LOADED" : "NULL"));
 
-            System.out.println("DEBUG SMTP ENV USERNAME = " + u1);
-            System.out.println("DEBUG SMTP ENV PASSWORD = " + (p1 != null ? "LOADED" : "NULL"));
+        // Debug: Check Spring mail properties (JavaMail uses these)
+        System.out.println("SYS spring.mail.username = " + System.getProperty("spring.mail.username"));
+        System.out.println("SYS spring.mail.password = " +
+                (System.getProperty("spring.mail.password") != null ? "LOADED" : "NULL"));
 
-            String s1 = System.getProperty("spring.mail.username");
-            String s2 = System.getProperty("spring.mail.password");
+        // Create the email message
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(toEmail);
+        msg.setSubject("Your Smart Parking OTP");
+        msg.setText("Your OTP for email verification is: " + otp + "\nThis code is valid for 10 minutes.");
 
-            System.out.println("DEBUG SMTP SYS-PROP USERNAME = " + s1);
-            System.out.println("DEBUG SMTP SYS-PROP PASSWORD = " + (s2 != null ? "LOADED" : "NULL"));
-
-            // Temporary disable email sending to avoid crash
-            System.out.println("SMTP test — Email sending disabled");
-
+        // Now send
+        try {
+            mailSender.send(msg);
+            System.out.println("SMTP EMAIL SENT SUCCESSFULLY TO → " + toEmail);
+        } catch (Exception e) {
+            System.out.println("SMTP SENDING FAILED: " + e.getMessage());
+            throw e;
+        }
     }
 }
