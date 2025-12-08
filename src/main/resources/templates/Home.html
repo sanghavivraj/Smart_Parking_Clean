@@ -4,66 +4,58 @@
     <meta charset="UTF-8" />
     <title>Smart Parking</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    <style>
-        [data-cloak] { display: none !important; }
-        .how-card {
-    transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms, border-color 220ms;
-    will-change: transform;
-  }
-  .how-card:focus,
-  .how-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 18px 40px rgba(8,6,20,0.6), 0 6px 18px rgba(124,58,237,0.12);
-    outline: none;
-  }
-  .badge {
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
 
-  /* subtle emphasis on the icon square */
-  .icon-square {
-    transition: background-color 220ms, transform 220ms;
-  }
-  .how-card:hover .icon-square {
-    transform: translateY(-3px);
-    background-color: rgba(255,255,255,0.12) !important;
-  }
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
+    <style>
+        body {
+            background-color: #1a1a1a;
+            font-family: 'Manrope', sans-serif;
+        }
+        [data-cloak] { display: none !important; }
+
+        .how-card {
+            transition: transform .25s, box-shadow .25s, border-color .25s;
+        }
+        .how-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(8, 6, 20, 0.6);
+        }
     </style>
 </head>
-<body class="bg-[#1a1a1a] text-white font-[Manrope] min-h-screen flex flex-col">
 
-<header class="w-full bg-transparent top-20 z-40">
+<body class="text-white min-h-screen flex flex-col">
+
+<!-- ================= HEADER ================= -->
+<header class="w-full bg-transparent">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
 
             <!-- LOGO -->
-            <a href="/Home" class="flex items-center gap-0">
-                <img src="/images/logo.png" alt="ParkSmart Logo" class="w-20 h-20 object-contain rounded" />
-                <span class="text-lg font-bold leading-none">Smart Parking</span>
+            <a href="/Home" class="flex items-center gap-3">
+                <img src="/images/logo.png" class="w-14 h-14 rounded" alt="Logo"/>
+                <span class="text-xl font-bold">Smart Parking</span>
             </a>
 
-            <!-- DESKTOP NAVIGATION -->
-            <nav class="hidden md:flex items-center gap-8 text-sm text-[#d1d5db]">
+            <!-- DESKTOP NAV -->
+            <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
                 <a href="/Home" class="hover:text-white transition">Home</a>
                 <a href="#features" class="hover:text-white transition">Features</a>
                 <a href="/ContactUs" class="hover:text-white transition">Contact Us</a>
             </nav>
 
-            <!-- RIGHT SIDE BUTTONS -->
+            <!-- RIGHT SECTION -->
             <div class="flex items-center gap-3">
 
-                <!-- WHEN USER IS LOGGED IN -->
+                <!-- WHEN LOGGED IN -->
                 <th:block th:if="${session.loggedUser != null}">
                     <a href="/profile"
-                       class="hidden sm:inline-flex w-10 h-10 rounded-full bg-white items-center justify-center text-[#1a1a1a] hover:scale-105 transition"
-                       aria-label="Profile">
-
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                             viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                       class="hidden sm:flex w-10 h-10 rounded-full bg-white text-black items-center justify-center hover:scale-105 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                   d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5
                                   19.5a8.25 8.25 0 1115 0v.75H4.5v-.75z"/>
@@ -71,340 +63,117 @@
                     </a>
                 </th:block>
 
-                <!-- WHEN USER IS NOT LOGGED IN -->
+                <!-- WHEN NOT LOGGED IN -->
                 <th:block th:unless="${session.loggedUser != null}">
                     <a href="/Userlogin"
-                       class="hidden sm:inline-flex px-6 py-2 rounded-full bg-white text-[#1a1a1a] font-semibold hover:scale-105 transition">
+                       class="hidden sm:flex px-6 py-2 rounded-full bg-white text-black font-semibold hover:scale-105 transition">
                         Login
                     </a>
                 </th:block>
 
-                <!-- MOBILE MENU TOGGLE -->
+                <!-- MOBILE MENU BTN -->
                 <button id="mobileToggle"
-                        class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[#d1d5db] hover:bg-white/5 focus:outline-none"
-                        aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation">
-                    <svg id="mobileHamburger" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg"
-                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        class="md:hidden p-2 rounded text-gray-300 hover:bg-white/10">
+                    <svg id="hamburger" class="w-6 h-6" fill="none" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M4 8h16M4 16h16"/>
                     </svg>
-
-                    <svg id="mobileClose" class="w-6 h-6 hidden" xmlns="http://www.w3.org/2000/svg"
-                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <svg id="closeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
+
             </div>
         </div>
     </div>
 
-    <!-- ================== MOBILE MENU ================== -->
-    <div id="mobileMenu" class="md:hidden bg-[#111111] border-t border-[#222] hidden" aria-hidden="true">
-        <div class="px-4 pt-3 pb-4 space-y-2">
+    <!-- MOBILE MENU -->
+    <div id="mobileMenu" class="md:hidden hidden bg-[#111] border-t border-[#222]">
+        <div class="px-4 py-4 space-y-2">
+            <a href="/Home" class="block py-2 text-gray-300 hover:text-white">Home</a>
+            <a href="#features" class="block py-2 text-gray-300 hover:text-white">Features</a>
+            <a href="/ContactUs" class="block py-2 text-gray-300 hover:text-white">Contact Us</a>
 
-            <a href="/Home" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
-                Home
-            </a>
-
-            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
-                Features
-            </a>
-
-            <a href="/ContactUs" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
-                Contact Us
-            </a>
-
-            <!-- MOBILE LOGIN / PROFILE -->
-            <div class="pt-3 border-t border-[#222]">
-
-                <!-- If user is logged in -->
+            <div class="border-t border-[#333] pt-3">
                 <th:block th:if="${session.loggedUser != null}">
-                    <a href="/profile"
-                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                    <a href="/profile" class="block bg-white text-black text-center py-2 rounded font-semibold">
                         Profile
                     </a>
                 </th:block>
 
-                <!-- If user is NOT logged in -->
                 <th:block th:unless="${session.loggedUser != null}">
-                    <a href="/Userlogin"
-                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                    <a href="/Userlogin" class="block bg-white text-black text-center py-2 rounded font-semibold">
                         Login
                     </a>
                 </th:block>
             </div>
         </div>
     </div>
-
-    <!-- MOBILE MENU SCRIPT (robust & DOM-ready) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-          const toggle = document.getElementById('mobileToggle');
-          const menu = document.getElementById('mobileMenu');
-          const ham = document.getElementById('mobileHamburger');
-          const closeIcon = document.getElementById('mobileClose');
-
-          if (!toggle || !menu || !ham || !closeIcon) return;
-
-          // ensure initial state
-          menu.classList.add('hidden');
-          ham.classList.remove('hidden');
-          closeIcon.classList.add('hidden');
-          menu.setAttribute('aria-hidden', 'true');
-          toggle.setAttribute('aria-expanded', 'false');
-
-          toggle.addEventListener('click', function (e) {
-            const isHidden = menu.classList.contains('hidden');
-            if (isHidden) {
-              menu.classList.remove('hidden');
-              ham.classList.add('hidden');
-              closeIcon.classList.remove('hidden');
-              menu.setAttribute('aria-hidden', 'false');
-              toggle.setAttribute('aria-expanded', 'true');
-            } else {
-              menu.classList.add('hidden');
-              ham.classList.remove('hidden');
-              closeIcon.classList.add('hidden');
-              menu.setAttribute('aria-hidden', 'true');
-              toggle.setAttribute('aria-expanded', 'false');
-            }
-          });
-
-          // close mobile menu when resizing to desktop width
-          window.addEventListener('resize', function () {
-            if (window.innerWidth >= 768 && !menu.classList.contains('hidden')) {
-              menu.classList.add('hidden');
-              ham.classList.remove('hidden');
-              closeIcon.classList.add('hidden');
-              menu.setAttribute('aria-hidden', 'true');
-              toggle.setAttribute('aria-expanded', 'false');
-            }
-          });
-
-          // close when clicking outside (mobile only)
-          document.addEventListener('click', function (e) {
-            if (window.innerWidth >= 768) return;
-            if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !toggle.contains(e.target)) {
-              menu.classList.add('hidden');
-              ham.classList.remove('hidden');
-              closeIcon.classList.add('hidden');
-              menu.setAttribute('aria-hidden', 'true');
-              toggle.setAttribute('aria-expanded', 'false');
-            }
-          });
-        });
-    </script>
-
 </header>
 
-<!-- ===== Hero + rest of original page (images left intact) ===== -->
+
+<!-- ================= HERO SECTION ================= -->
 <main class="flex-1">
-    <!-- Hero -->
-    <section class="px-4 lg:px-20 py-4">
-        <div class="rounded-xl bg-cover bg-center h-[400px] flex flex-col justify-center items-center text-center"
-             style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuAobwSsgIt2gPPU0SRN6lBtD1lSep0JCbtbNGEjLxdhKnqbyA_UPVTIQ9VzK8HBfCJoSLrOGI9M_Wx5mZwPmOEao--a5dOH_VKsVfP3BS2l6YeJChrV-kf8yKh2mb08MaaqRImHHaLHZ-_IilhTWQCLptAL4flKZoBBDhjSuFoYDrkhd4jRgZ7ZgiEYFFbo1Fnpc6K2w-pW6taULYf89O5GrcvUUhHeHZIyfh-idlSW27rhqxTmz9WKf5xp_edycsv2PzNHQhRwTRWu');">
-            <h2 class="text-4xl sm:text-5xl md:text-6xl font-black leading-tight">Smart Parking Solutions</h2>
-            <p class="text-sm sm:text-base mt-2 max-w-xl">Find and reserve parking spots effortlessly with our innovative system.</p>
-            <a href="/reserve" class="mt-4 inline-block bg-white text-[#1a1a1a] px-6 py-2 rounded-full font-bold transition">
-                Explore Parking
-            </a>
-        </div>
-    </section>
 
-    <!-- Key Features -->
-    <section class="px-4 lg:px-20 py-10 max-w-[1200px] mx-auto">
-        <h2 class="text-3xl font-bold mb-2">Key Features</h2>
-        <p class="mb-6 text-[#ccc]">Our smart parking system offers a range of features to enhance your parking experience.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-[#2a2a2a] p-4 rounded-xl shadow">
-                <img class="rounded-lg mb-4 aspect-video w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3TR6kJPbSvGYFtH8mI1Jg9rGeIIycH9zktKtOFYolNcwBx6gS4m-5kuthe2P9yMaSMb3q28X0x0Dys-Xf-gr3bpuxZSMJsI8LDKhNFWgXKv01R9MyBMEEwWtY7Ru8Y_6dGTg2tGHadoHKeqImJHtrOa0NsdZnXyWW9aiMui9WpELwHsxxnbOsXG1RsLfzrM0PZDz8zZpqyzyRcl4KAXrYziqja7q_ViVrw9XsrpAI8xkz8N2Vi5FDVXAw0h_J1HZsgc4In7VSINNL" alt="Real-time Availability">
-                <h3 class="text-lg font-semibold mb-1">Real-time Availability</h3>
-                <p class="text-sm text-[#aaa]">Check parking availability in real-time with our intuitive map interface.</p>
-            </div>
-            <div class="bg-[#2a2a2a] p-4 rounded-xl shadow">
-                <img class="rounded-lg mb-4 aspect-video w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVHgydyuGq7NONMpqiPH7njNDoFZJTWJceGrEJ2SVDcuXqXDgvCKvdm6xow5pCdQ5FhhqpvqwelfDcG5ArjkJqBB4sZP0ki9lMXsZFj_Hzi2_3iRUyRGeXoDMFb0arBG-2rE2jYPny-tn3AcWcNpaHAZxYrNYF3OtQfn5W10kTHvWy8v3q_aFlJ5BVdPGnTOja0-sVdeyYZLkcPaTPbawYPhxD4gNrGNFr6usY0KsjwKzMgzJBoaEcBRN0itI05ybkGUUp6j_ek_LB" alt="Easy Reservations">
-                <h3 class="text-lg font-semibold mb-1">Easy Reservations</h3>
-                <p class="text-sm text-[#aaa]">Reserve your parking spot in advance with just a few clicks.</p>
-            </div>
-            <div class="bg-[#2a2a2a] p-4 rounded-xl shadow">
-                <img class="rounded-lg mb-4 aspect-video w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd94aGpop8PBtqCk11sFE5ogjfYdEVHwli_NTqYnDU7vYfm_zPBe1YXhb9fivHZFE78EbJKGEs5siwWzZU6lwRrD3wOXSQvRjZ2JTSvyoaFY-AVYvXt94LFfQgt_lBpB1E-2JRILQSSR9xNwrCPn5t61rbhREkBkd5pLD0s0TGo_XlTiNkIG9O9bEFBfmPy4Ad1grs06dsBG2schCMbXHDAWSM0mCov65fy3TFKqk7nO_n2bOMHIzQDwHnWDjqzAEGwjz-OfAy4gFX" alt="Automated Payments">
-                <h3 class="text-lg font-semibold mb-1">Automated Payments</h3>
-                <p class="text-sm text-[#aaa]">Enjoy hassle-free automated payments for a seamless experience.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== How It Works (replace the "Parking Locations" section with this) ===== -->
-    <section id="how-it-works" class="px-4 lg:px-20 py-5 max-w-[1200px] mx-auto">
-        <h2 class="text-3xl font-bold mb-2">How It Works</h2>
-        <p class="mb-6 text-[#cfcfcf] max-w-4xl">
-            Smart Parking System makes finding and reserving parking effortless - three simple steps from search to park.
-        </p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            <!-- Step 1 - deep red -->
-            <article tabindex="0"
-                     class="how-card rounded-xl p-6 shadow-lg bg-[#7C1D1D] text-white focus:ring-2 focus:ring-[#7c3aed]/40">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center icon-square">
-                        <!-- search icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z" />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <p class="text-xs opacity-90">STEP 1</p>
-                        <h3 class="text-xl font-semibold">Search Nearby</h3>
-                    </div>
-                </div>
-
-                <p class="mt-4 text-sm opacity-95">
-                    Use the map or search bar to find available parking near your destination in real-time.
-                </p>
-
-                <div class="mt-4">
-      <span class="inline-flex items-center text-sm font-medium badge bg-white/10 px-3 py-1 rounded-full border border-white/10">
-        Real-time availability
-      </span>
-                </div>
-            </article>
-
-            <!-- Step 2 - teal green -->
-            <article tabindex="0"
-                     class="how-card rounded-xl p-6 shadow-lg bg-[#155E63] text-white focus:ring-2 focus:ring-[#7c3aed]/40">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center icon-square">
-                        <!-- reserve icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M12 5v14" />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <p class="text-xs opacity-90">STEP 2</p>
-                        <h3 class="text-xl font-semibold">Reserve Instantly</h3>
-                    </div>
-                </div>
-
-                <p class="mt-4 text-sm opacity-95">
-                    Pick a spot, choose your time, and reserve with a tap — your slot is held for you.
-                </p>
-
-                <div class="mt-4">
-      <span class="inline-flex items-center text-sm font-medium badge bg-white/10 px-3 py-1 rounded-full border border-white/10">
-        Hold your spot
-      </span>
-                </div>
-            </article>
-
-            <!-- Step 3 - blue -->
-            <article tabindex="0"
-                     class="how-card rounded-xl p-6 shadow-lg bg-[#11698E] text-white focus:ring-2 focus:ring-[#7c3aed]/40">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center icon-square">
-                        <!-- park & pay icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <p class="text-xs opacity-90">STEP 3</p>
-                        <h3 class="text-xl font-semibold">Park & Pay</h3>
-                    </div>
-                </div>
-
-                <p class="mt-4 text-sm opacity-95">
-                    Arrive, park in your reserved bay and pay instantly through secure checkout.
-                </p>
-
-                <div class="mt-4">
-                    <span class="inline-flex items-center text-sm font-medium badge bg-white/10 px-3 py-1 rounded-full border border-white/10">
-                        Contactless payment
-                    </span>
-                </div>
-            </article>
-        </div>
-
-
-        <!-- CTA row -->
-        <div class="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-between">
-            <p class="text-sm text-[#cfcfcf] max-w-xxl">
-                Ready to try? Reserve a spot now and skip the search - fast, secure and reliable parking made simple.
-            </p>
-        </div>
+    <section class="px-4 py-10 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold">Smart Parking Solutions</h1>
+        <p class="text-gray-300 mt-2">Find and reserve parking effortlessly</p>
+        <a href="/reserve"
+           class="mt-4 inline-block bg-white text-black font-bold px-6 py-2 rounded-full">
+            Explore Parking
+        </a>
     </section>
 
 
-    <!-- ===== Feedback Section (GRADIENT THEME) ===== -->
-    <section class="px-4 lg:px-20 py-12 max-w-[1200px] mx-auto">
+    <!-- ================= FEEDBACK SUCCESS MESSAGE ================= -->
+    <div th:if="${param.feedbackSuccess}" class="text-center text-green-400 font-semibold mb-4">
+        Feedback submitted successfully ✓
+    </div>
 
-        <!-- Heading -->
-        <div class="mb-6">
-            <h2 class="text-3xl font-bold mb-2">Feedback</h2>
-        </div>
 
-        <!-- Gradient Card -->
-        <div class="rounded-xl p-8
-                bg-gradient-to-br from-[#3A1D3F] via-[#2A1B33] to-[#1A1A1A]
-                text-white border border-white/10
-                shadow-[0_0_25px_rgba(0,0,0,0.45)]">
+    <!-- ================= FEEDBACK SECTION ================= -->
+    <section class="px-4 lg:px-20 py-12 max-w-[800px] mx-auto">
 
-            <p class="mb-6 text-sm sm:text-base opacity-90">
-                We’d love to hear your thoughts - help us improve.
+        <h2 class="text-3xl font-bold mb-6">Feedback</h2>
+
+        <div class="bg-[#222] p-8 rounded-xl border border-white/10 shadow-xl">
+
+            <p class="text-gray-300 mb-6">
+                We'd love to hear from you — help us improve.
             </p>
 
-            <form id="feedbackForm" class="space-y-6" autocomplete="off">
+            <!-- FIXED FEEDBACK FORM -->
+            <form th:action="@{/saveFeedback}" method="post">
 
-                <!-- Email -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">
-                        Email <span class="text-red-300">*</span>
-                    </label>
-                    <input id="email" type="email" required
-                           class="w-full rounded-lg bg-white/10 border border-white/20 px-4 py-2.5
-                              placeholder-white/60 text-white
-                              focus:ring-2 focus:ring-[#7c3aed]/50 focus:outline-none">
+                <div class="mb-4">
+                    <label class="block text-sm">Email *</label>
+                    <input name="email" type="email" required
+                           class="w-full bg-[#111] border border-[#333] rounded p-3 text-white mt-1"/>
                 </div>
 
-                <!-- Feedback -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">
-                        Feedback <span class="text-red-300">*</span>
-                    </label>
-                    <textarea id="message" rows="5" required
-                              class="w-full rounded-lg bg-white/10 border border-white/20 px-4 py-3
-                                 placeholder-white/60 text-white
-                                 focus:ring-2 focus:ring-[#7c3aed]/50 focus:outline-none"></textarea>
+                <div class="mb-4">
+                    <label class="block text-sm">Feedback *</label>
+                    <textarea name="message" rows="5" required
+                              class="w-full bg-[#111] border border-[#333] rounded p-3 text-white mt-1"></textarea>
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit"
-                        class="bg-white text-[#2A1B33] font-semibold rounded-full px-8 py-3
-                           hover:bg-gray-200 transition shadow-md">
+                        class="w-full bg-purple-500 hover:bg-purple-600 py-3 rounded-full font-semibold">
                     Submit Feedback
                 </button>
-            </form>
-        </div>
 
-        <!-- Toast -->
-        <div id="feedbackToast"
-             class="fixed bottom-6 right-6 bg-[#111] border border-[#333] text-white px-5 py-2.5 rounded-md
-                shadow-xl hidden transition-all duration-300">
-            Feedback submitted ✓
+            </form>
+
         </div>
 
     </section>
-
 
 </main>
 
-<!-- Footer -->
-<footer class="text-center py-10 text-[#999] text-sm border-t border-[#333] mt-auto">
-    <div class="flex justify-center flex-wrap gap-6 mb-4">
+<!-- ================= FOOTER ================= -->
+<footer class="text-center py-10 text-gray-400 text-sm border-t border-[#333] mt-auto">
+    <div class="flex justify-center gap-6 mb-4">
         <a href="/Privacy" class="hover:text-white">Privacy Policy</a>
         <a href="/Terms" class="hover:text-white">Terms of Service</a>
         <a href="/ContactUs" class="hover:text-white">Contact Us</a>
@@ -412,99 +181,20 @@
     <p>&copy; 2025 Smart_Parking. All rights reserved.</p>
 </footer>
 
-<!-- Minimal JS to toggle mobile menu -->
+
+<!-- ================= MOBILE MENU SCRIPT ================= -->
 <script>
-    (function() {
-      const mobileToggle = document.getElementById('mobileToggle');
-      const mobileMenu = document.getElementById('mobileMenu');
-      const hamburger = document.getElementById('hamburger');
-      const close = document.getElementById('close');
+    const toggle = document.getElementById("mobileToggle");
+    const menu = document.getElementById("mobileMenu");
+    const ham = document.getElementById("hamburger");
+    const closeIcon = document.getElementById("closeIcon");
 
-      // ensure menu starts hidden
-      if (mobileMenu) {
-        mobileMenu.classList.add('hidden');
-        mobileMenu.removeAttribute('data-cloak');
-      }
-
-      function openMenu() {
-        mobileMenu.classList.remove('hidden');
-        hamburger.classList.add('hidden');
-        close.classList.remove('hidden');
-        mobileToggle.setAttribute('aria-expanded', 'true');
-      }
-      function closeMenu() {
-        mobileMenu.classList.add('hidden');
-        hamburger.classList.remove('hidden');
-        close.classList.add('hidden');
-        mobileToggle.setAttribute('aria-expanded', 'false');
-      }
-
-      mobileToggle.addEventListener('click', function(e) {
-        if (mobileMenu.classList.contains('hidden')) openMenu(); else closeMenu();
-      });
-
-      // close on outside click
-      document.addEventListener('click', function(e) {
-        const target = e.target;
-        if (!mobileMenu.contains(target) && !mobileToggle.contains(target) && !mobileMenu.classList.contains('hidden')) {
-          closeMenu();
-        }
-      });
-
-      // adjust when resizing from mobile -> desktop
-      window.addEventListener('resize', function() {
-        if (window.innerWidth >= 768) {
-          mobileMenu.classList.add('hidden');
-          hamburger.classList.remove('hidden');
-          close.classList.add('hidden');
-          mobileToggle.setAttribute('aria-expanded', 'false');
-        }
-      });
-    })();
-
-    // Feedback form handling
-    (function () {
-      const form = document.getElementById('feedbackForm');
-      const email = document.getElementById('email');
-      const message = document.getElementById('message');
-      const toast = document.getElementById('feedbackToast');
-
-      function showToast(text) {
-        if (!toast) return;
-        toast.textContent = text;
-        toast.classList.remove('hidden');
-        toast.style.opacity = '1';
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          // hide after fade out
-          setTimeout(() => toast.classList.add('hidden'), 300);
-        }, 2200);
-      }
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        // simple validation (HTML required attributes also present)
-        if (!email.value.trim() || !message.value.trim()) {
-          alert('Please fill in both fields.');
-          return;
-        }
-
-        // Optionally: validate email format
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(email.value.trim())) {
-          alert('Please enter a valid email address.');
-          return;
-        }
-
-        // Simulate submission (here you can add fetch/ajax to backend)
-        // On success:
-        email.value = '';
-        message.value = '';
-        // show small toast as well
-        showToast('Feedback submitted ✓');
-      });
-    })();
+    toggle.addEventListener("click", () => {
+        const hidden = menu.classList.contains("hidden");
+        menu.classList.toggle("hidden");
+        ham.classList.toggle("hidden", !hidden);
+        closeIcon.classList.toggle("hidden", hidden);
+    });
 </script>
 
 </body>
