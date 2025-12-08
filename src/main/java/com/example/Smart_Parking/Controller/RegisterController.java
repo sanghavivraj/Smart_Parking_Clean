@@ -12,15 +12,9 @@ import org.springframework.web.bind.annotation.*;
 public class RegisterController {
 
     private final UserService userService;
-    private final EmailService emailService;
-    private final VerificationService verificationService;
 
-    public RegisterController(UserService userService,
-                              EmailService emailService,
-                              VerificationService verificationService) {
+    public RegisterController(UserService userService) {
         this.userService = userService;
-        this.emailService = emailService;
-        this.verificationService = verificationService;
     }
 
     @GetMapping("/register")
