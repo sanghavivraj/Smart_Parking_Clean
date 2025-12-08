@@ -72,6 +72,6 @@ public class ProfileController {
         model.addAttribute("user", updatedUser);
         model.addAttribute("success", "Profile updated successfully!");
 
-        return "redirect:/Profile";
+        return "redirect:/profile";
     }
 }
