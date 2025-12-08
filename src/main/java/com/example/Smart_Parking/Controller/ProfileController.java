@@ -16,38 +16,39 @@ public class ProfileController {
         this.userService = userService;
     }
 
-    // Show profile
+    // ---------------- SHOW PROFILE ----------------
     @GetMapping("/profile")
     public String profilePage(HttpSession session, Model model) {
 
         User loggedUser = (User) session.getAttribute("loggedUser");
 
         if (loggedUser == null) {
-            return "redirect:/login"; // use your login page mapping
+            return "redirect:/login";
         }
 
         model.addAttribute("user", loggedUser);
-        return "Profile"; // Profile.html
+        return "Profile";
     }
 
-    // Show Edit Profile Page
+    // ---------------- SHOW EDIT PAGE ----------------
     @GetMapping("/profile/edit")
     public String editProfileForm(HttpSession session, Model model) {
 
         User loggedUser = (User) session.getAttribute("loggedUser");
+
         if (loggedUser == null) {
             return "redirect:/login";
         }
 
         model.addAttribute("user", loggedUser);
-        return "EditProfile"; // Create EditProfile.html
+        return "EditProfile"; // must match EditProfile.html
     }
 
-    // Handle Edit Profile Submission
+    // ---------------- HANDLE UPDATE ----------------
     @PostMapping("/profile/update")
-    public String updateProfile(@RequestParam String username,
-                                @RequestParam String phone,
-                                @RequestParam String email,
+    public String updateProfile(@RequestParam("username") String username,
+                                @RequestParam("phone") String phone,
+                                @RequestParam("email") String email,
                                 HttpSession session,
                                 Model model) {
 
@@ -57,15 +58,20 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        // Update User
-        User updatedUser = userService.updateProfile(loggedUser.getUserid(), username, phone, email);
+        // Call service to update user in database
+        User updatedUser = userService.updateProfile(
+                loggedUser.getUserid(),
+                username,
+                phone,
+                email
+        );
 
-        // Update session with new user data
+        // Update session
         session.setAttribute("loggedUser", updatedUser);
 
-        model.addAttribute("success", true);
         model.addAttribute("user", updatedUser);
+        model.addAttribute("success", "Profile updated successfully!");
 
-        return "Profile"; // Go back to profile page with updated info
+        return "redirect:/Profile";
     }
 }
