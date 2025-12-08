@@ -65,4 +65,22 @@ public class UserService {
     public Optional<User> getUserById(Long id) {
         return repo.findById(id);
     }
+
+    public User updateProfile(Long userId, String username, String phone, String email) {
+
+        Optional<User> opt = repo.findById(userId);
+        if (opt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = opt.get();
+
+        user.setUsername(username);
+        user.setPhone(phone);
+        user.setEmail(email);
+
+        repo.save(user);
+        return user;
+    }
+
 }

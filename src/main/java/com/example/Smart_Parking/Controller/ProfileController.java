@@ -58,7 +58,7 @@ public class ProfileController {
         }
 
         // Update User
-        User updatedUser = userService.updateProfile(loggedUser.getId(), username, phone, email);
+        User updatedUser = userService.updateProfile(loggedUser.getUserid(), username, phone, email);
 
         // Update session with new user data
         session.setAttribute("loggedUser", updatedUser);
