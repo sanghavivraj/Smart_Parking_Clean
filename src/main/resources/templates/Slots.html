@@ -1,124 +1,305 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Book Slot - Smart Parking</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap"
-          rel="stylesheet">
+    <title>Book Slot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <style>
-        body {
-            margin: 0;
-            font-family: 'Manrope', sans-serif;
-            background-color: #1a1a1a;
-            color: white;
+        :root{
+            --bg:#0e0e11;
+            --card-green:#2e7d32;
+            --unavailable:#2f2f35;
+            --muted:#c7c7cc;
         }
 
-        h2 {
-            text-align: center;
-            padding: 2rem 1rem 1rem;
-            font-size: 2.2rem;
-            font-weight: 800;
+        *{box-sizing:border-box;font-family:'Manrope',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+        html,body{height:100%}
+        body{
+            background: var(--bg);
+            color:#fff;
+            margin:0;
+            min-height:100%;
+            display:flex;
+            flex-direction:column;
         }
+
+        header{width:100%}
+        .nav-wrap{max-width:1100px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:72px}
+        .brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:inherit}
+        .brand img{width:56px;height:56px;object-fit:contain;border-radius:8px}
+        .brand .title{font-weight:800;font-size:1rem;color:#fff}
+        .desktop-nav{display:flex;gap:24px;align-items:center}
+        .desktop-nav a{color:#d1d5db;text-decoration:none;font-weight:500}
+        .nav-link{position:relative}
+        .nav-link::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:#7c3aed;transition:width .28s}
+        .nav-link:hover::after{width:100%}
+        .nav-actions{display:flex;gap:12px;align-items:center}
+        .btn-ghost{background:transparent;border-radius:999px;padding:8px 14px;color:#d1d5db;text-decoration:none;border:none}
+        .btn-primary{background:#fff;color:#0e0e11;padding:8px 14px;border-radius:999px;font-weight:700;text-decoration:none}
+        #mobileToggle{background:transparent;border:0;color:#d1d5db;padding:8px;cursor:pointer}
+        #mobileMenu{display:none;background:#0f0f0f;border-top:1px solid #222}
+
+        main{flex:1;padding:34px 18px 80px;}
 
         .slot-grid {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 20px;
-            max-width: 1300px;
-            margin: auto;
-            padding: 2rem;
+            grid-template-columns: repeat(auto-fit, 140px);
+            justify-content: center;
+            gap: 28px;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 12px 10px;
+            align-items: stretch;
         }
 
         .slot {
+            width: 140px;
+            height: 140px;
             border-radius: 12px;
-            padding: 1.8rem 1rem;
+            padding: 18px 12px;
             text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        /* Available slots are green */
-        .slot.available {
+            transition: transform .14s ease, box-shadow .14s ease;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            gap: 10px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.5);
             background-color: #2e7d32;
         }
 
-        /* Booked slots are gray and unclickable */
-        .slot.booked {
-            background-color: #444;
-            opacity: 0.6;
+        .slot.available{
+            background-color: var(--card-green);
+            cursor: pointer;
+        }
+
+        .slot.booked{
+            background-color: var(--unavailable);
+            opacity: 0.95;
             pointer-events: none;
             box-shadow: none;
         }
 
-        .slot:hover.available {
-            transform: scale(1.05);
-            box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+        .slot:hover.available{
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.65);
         }
 
         .slot p {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin: 0;
+            color: #fff;
+            letter-spacing: .4px;
         }
 
+        .slot form button,
         .slot button {
-            background-color: white;
-            color: #1a1a1a;
+            display:inline-block;
+            background:#fff;
+            color:#1a1a1a;
             border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
+            padding: 8px 18px;
+            font-size: 0.98rem;
+            font-weight:1000;
             border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease, color 0.3s ease;
+            cursor:pointer;
+            margin:auto;
+            transition: transform .12s ease, box-shadow .12s ease, background .12s;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.22);
         }
 
-        .slot button:hover {
-            background-color: #00ffff;
-            color: #000;
+        .slot.booked p { color: #9aa0a6; font-weight:700; opacity:0.95 }
+
+        @media (max-width:1200px) {
+            .slot-grid { gap: 22px; grid-template-columns: repeat(auto-fit, 140px); }
+        }
+        @media (max-width:1024px) {
+            .slot-grid { gap: 18px; grid-template-columns: repeat(auto-fit, 150px); }
+            .slot { width:150px; height:150px; }
+        }
+        @media (max-width:768px) {
+            .slot-grid { grid-template-columns: repeat(2, minmax(120px, 1fr)); gap:18px; justify-items:center; }
+            .slot { width:20vw; height:20vw; max-width:200px; max-height:200px; }
+            .page-title { font-size:28px; margin-bottom:16px; }
+        }
+        @media (max-width:420px) {
+            .slot-grid { grid-template-columns: 1fr; gap:16px; }
+            .slot { width:40vw; height:40vw; }
         }
 
-        @media (max-width: 1024px) {
-            .slot-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .slot-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .slot-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        footer{padding:18px 0;text-align:center;color:#999;border-top:1px solid #333;margin-top:0;font-size:14px}
+        footer a{color:#d1d5db;text-decoration:none;margin:0 .5rem}
     </style>
 </head>
-<body>
-<h2>Select Your Parking Slot</h2>
+<body class="bg-[#0e0e11] text-white">
 
-<div class="slot-grid">
-    <div th:each="slot : ${availableSlots}"
-         th:classappend="${slot.available} ? 'available' : 'booked'"
-         class="slot">
+<header class="w-full bg-transparent top-20 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
 
-        <p th:text="${slot.slotLabel}">Slot</p>
+            <a href="/Home" class="flex items-center gap-0">
+                <img src="/images/logo.png" alt="ParkSmart Logo" class="w-20 h-20 object-contain rounded" />
+                <span class="text-lg font-bold leading-none">Smart Parking</span>
+            </a>
 
-        <form th:if="${slot.available}" th:action="@{/reserve/finalize}" method="post">
-            <input type="hidden" name="slotId" th:value="${slot.slotId}" />
-            <input type="hidden" name="vehicleNumber" th:value="${vehicleNumber}" />
-            <input type="hidden" name="date" th:value="${date}" />
-            <input type="hidden" name="startTime" th:value="${startTime}" />
-            <input type="hidden" name="durationHours" th:value="${durationHours}" />
-            <button type="submit">Book</button>
-        </form>
+            <nav class="hidden md:flex items-center gap-8 text-sm text-[#d1d5db]">
+                <a href="/Home" class="hover:text-white transition">Home</a>
+                <a href="#features" class="hover:text-white transition">Features</a>
+                <a href="/ContactUs" class="hover:text-white transition">Contact Us</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+
+                <th:block th:if="${session.loggedUser != null}">
+                    <a href="/profile"
+                       class="hidden sm:inline-flex w-10 h-10 rounded-full bg-white items-center justify-center text-[#1a1a1a] hover:scale-105 transition"
+                       aria-label="Profile">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5
+                                  19.5a8.25 8.25 0 1115 0v.75H4.5v-.75z"/>
+                        </svg>
+                    </a>
+                </th:block>
+
+                <th:block th:unless="${session.loggedUser != null}">
+                    <a href="/Userlogin"
+                       class="hidden sm:inline-flex px-6 py-2 rounded-full bg-white text-[#1a1a1a] font-semibold hover:scale-105 transition">
+                        Login
+                    </a>
+                </th:block>
+
+                <button id="mobileToggle"
+                        class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[#d1d5db] hover:bg-white/5 focus:outline-none"
+                        aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation">
+                    <svg id="mobileHamburger" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 8h16M4 16h16"/>
+                    </svg>
+
+                    <svg id="mobileClose" class="w-6 h-6 hidden" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
-</div>
+
+    <div id="mobileMenu" class="md:hidden bg-[#111111] border-t border-[#222] hidden" aria-hidden="true">
+        <div class="px-4 pt-3 pb-4 space-y-2">
+
+            <a href="/Home" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Home
+            </a>
+
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Features
+            </a>
+
+            <a href="/ContactUs" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Contact Us
+            </a>
+
+            <div class="pt-3 border-t border-[#222]">
+
+                <th:block th:if="${session.loggedUser != null}">
+                    <a href="/profile"
+                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                        Profile
+                    </a>
+                </th:block>
+
+                <th:block th:unless="${session.loggedUser != null}">
+                    <a href="/Userlogin"
+                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                        Login
+                    </a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <h2 class="text-2xl font-extrabold text-center text-[#c7bfff] mb-6">Select Your Parking Slot</h2>
+
+    <div class="slot-grid" role="list">
+        <div th:each="slot : ${availableSlots}"
+             th:classappend="${slot.available} ? ' available' : ' booked'"
+             class="slot" role="listitem">
+
+            <p th:text="${slot.slotLabel}">P1</p>
+
+            <form th:if="${slot.available}" th:action="@{/reserve/finalize}" method="post" style="display:flex;align-items:center;justify-content:center;">
+                <input type="hidden" name="slotId" th:value="${slot.slotId}" />
+                <input type="hidden" name="vehicleNumber" th:value="${vehicleNumber}" />
+                <input type="hidden" name="date" th:value="${date}" />
+                <input type="hidden" name="startTime" th:value="${startTime}" />
+                <input type="hidden" name="durationHours" th:value="${durationHours}" />
+                <button type="submit">Book</button>
+            </form>
+
+        </div>
+    </div>
+</main>
+
+<footer class="text-center py-10 text-[#999] text-sm border-t border-[#333] mt-auto">
+    <div class="flex justify-center flex-wrap gap-6 mb-4">
+        <a href="/Privacy" class="hover:text-white">Privacy Policy</a>
+        <a href="/Terms" class="hover:text-white">Terms of Service</a>
+        <a href="/ContactUs" class="hover:text-white">Contact Us</a>
+    </div>
+    <p>&copy; 2025 Smart_Parking. All rights reserved.</p>
+</footer>
+
+<script>
+    // mobile menu toggle (robust)
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggle = document.getElementById('mobileToggle');
+        const menu = document.getElementById('mobileMenu');
+        const ham = document.getElementById('mobileHamburger');
+        const closeIcon = document.getElementById('mobileClose');
+        if (!toggle || !menu || !ham || !closeIcon) return;
+
+        menu.style.display = 'none';
+        ham.style.display = 'block';
+        closeIcon.style.display = 'none';
+        toggle.setAttribute('aria-expanded', 'false');
+
+        function openMenu() {
+            menu.style.display = 'block';
+            ham.style.display = 'none';
+            closeIcon.style.display = 'block';
+            toggle.setAttribute('aria-expanded', 'true');
+        }
+        function closeMenu() {
+            menu.style.display = 'none';
+            ham.style.display = 'block';
+            closeIcon.style.display = 'none';
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+
+        toggle.addEventListener('click', function () {
+            if (menu.style.display === 'block') closeMenu(); else openMenu();
+        });
+
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768 && menu.style.display === 'block') closeMenu();
+        });
+
+        document.addEventListener('click', function (e) {
+            if (window.innerWidth >= 768) return;
+            if (menu.style.display === 'block' && !menu.contains(e.target) && !toggle.contains(e.target)) {
+                closeMenu();
+            }
+        });
+    });
+</script>
 </body>
 </html>
-
