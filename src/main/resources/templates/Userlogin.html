@@ -2,19 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Smart Parking</title>
+    <title>Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Prompt', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
 
         body {
-            background: linear-gradient(135deg, #000000, #00FFFF); /* black to cyan */
-            color: #e0ffff; /* light cyan text */
+            background: linear-gradient(135deg, #000000, #00FFFF);
+            color: #e0ffff;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,15 +20,9 @@
         }
 
         @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .login-container {
@@ -40,13 +30,13 @@
             padding: 3rem 2rem;
             border-radius: 10px;
             width: 350px;
-            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
         }
 
         .login-container h2 {
             text-align: center;
             margin-bottom: 2rem;
-            color: #00FFFF; /* cyan heading */
+            color: #00FFFF;
         }
 
         .form-group {
@@ -60,21 +50,68 @@
             color: #e0ffff;
         }
 
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 0.6rem;
-            border: 1px solid #00cccc;
-            background: #1c1c1c;
-            color: #e0ffff;
-            border-radius: 5px;
-            font-size: 1rem;
+        /* red asterisk */
+        .form-group label.required::after {
+            content: " *";
+            color: #ff4c4c;
+            font-weight: bold;
+        }
+
+        /* Generic input style */
+        input {
+            width:100%;
+            padding:0.6rem 3rem 0.6rem 0.6rem;
+            border:1px solid #00cccc;
+            border-radius:5px;
+            background:#1c1c1c;
+            color:#e0ffff;
+            font-size:1rem;
         }
 
         input:focus {
-            outline: none;
-            border-color: #00ffff;
+            outline:none;
+            border-color:#00ffff;
+            background:#222;
         }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            width: 100%;
+            padding-right: 2.5rem; /* space for icon */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #00ffff;
+        }
+
+        .toggle-password:focus {
+            outline:none;
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .icon-eye { display: inline-block; }
+        .icon-eye-slash { display: none; }
 
         .error-message {
             color: #ff4c4c;
@@ -88,7 +125,7 @@
             margin-top: 1.5rem;
         }
 
-        button {
+        button[type="submit"] {
             background-color: #00FFFF;
             color: #000000;
             padding: 0.7rem 1.5rem;
@@ -99,10 +136,7 @@
             transition: 0.3s;
             font-weight: bold;
         }
-
-        button:hover {
-            background-color: #00cccc;
-        }
+        button[type="submit"]:hover { background-color: #00cccc; }
 
         .register-link {
             text-align: center;
@@ -110,15 +144,13 @@
             font-size: 0.95rem;
             color: #e0ffff;
         }
+        .register-link a { color: #ffffff; text-decoration: none; font-weight: bold; }
+        .register-link a:hover { text-decoration: underline; }
 
-        .register-link a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .register-link a:hover {
-            text-decoration: underline;
+       @media (max-width:500px) {
+            .login-container {
+                padding:2rem 1.5rem;
+            }
         }
     </style>
 </head>
@@ -128,13 +160,29 @@
     <h2>Login</h2>
     <form th:action="@{/Userlogin}" method="post">
         <div class="form-group">
-            <label for="username">Email</label>
-            <input type="email" id="username" name="username" required />
+            <label for="username" class="required">Email</label>
+            <input type="email" id="username" name="username" placeholder="Enter your email" required />
         </div>
 
         <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required />
+            <label for="password" class="required">Password</label>
+
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password" />
+
+                <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password" title="Show / hide password">
+                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="#00FFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="3" stroke="#00FFFF" stroke-width="1.5"/>
+                    </svg>
+
+                    <svg class="icon-eye-slash" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="#00FFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="3" stroke="#00FFFF" stroke-width="1.5"/>
+                        <path d="M3 3L21 21" stroke="#00FFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <div th:if="${error}" class="error-message" th:text="${error}"></div>
@@ -148,6 +196,35 @@
         Don't have an account? <a th:href="@{/register}">Register</a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const pwd = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePassword');
+        const eye = toggleBtn.querySelector('.icon-eye');
+        const eyeSlash = toggleBtn.querySelector('.icon-eye-slash');
+
+        toggleBtn.addEventListener('click', function () {
+            const hidden = pwd.type === 'password';
+            pwd.type = hidden ? 'text' : 'password';
+
+            // show correct SVG
+            eye.style.display = hidden ? 'none' : 'inline-block';
+            eyeSlash.style.display = hidden ? 'inline-block' : 'none';
+
+            toggleBtn.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+            pwd.focus();
+        });
+
+        // keyboard support for accessibility
+        toggleBtn.addEventListener('keydown', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                toggleBtn.click();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
