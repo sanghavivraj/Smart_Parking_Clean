@@ -2,79 +2,206 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Smart Parking – Payment</title>
+    <title>Payment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f9f9f9;
-            padding: 40px;
-        }
-        .payment-form {
-            max-width: 400px;
-            margin: auto;
-            padding: 25px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            font-family: "Manrope", sans-serif;
         }
         input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 12px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .error { color: red; font-size: 0.9em; }
-        .success { color: green; font-size: 1em; margin-bottom: 15px; }
-        button {
-            background: #007bff;
+            background-color: #111827;
+            border: 1px solid #374151;
             color: white;
-            padding: 12px;
-            width: 100%;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
         }
-        button:hover { background: #0056b3; }
     </style>
 </head>
-<body>
-<div class="payment-form">
-    <h2>Complete Your Payment</h2>
 
-    <div th:if="${result}" th:classappend="${success} ? ' success' : ' error'">
-        <p th:text="${result}"></p>
+<body class="bg-[#0e0e11] text-white min-h-screen flex flex-col">
+
+<header class="w-full bg-transparent top-20 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+
+            <a href="/Home" class="flex items-center gap-0">
+                <img src="/images/logo.png" alt="ParkSmart Logo" class="w-20 h-20 object-contain rounded" />
+                <span class="text-lg font-bold leading-none">Smart Parking</span>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm text-[#d1d5db]">
+                <a href="/Home" class="hover:text-white transition">Home</a>
+                <a href="#features" class="hover:text-white transition">Features</a>
+                <a href="/ContactUs" class="hover:text-white transition">Contact Us</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+
+                <th:block th:if="${session.loggedUser != null}">
+                    <a href="/profile"
+                       class="hidden sm:inline-flex w-10 h-10 rounded-full bg-white items-center justify-center text-[#1a1a1a] hover:scale-105 transition"
+                       aria-label="Profile">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5
+                                  19.5a8.25 8.25 0 1115 0v.75H4.5v-.75z"/>
+                        </svg>
+                    </a>
+                </th:block>
+
+                <th:block th:unless="${session.loggedUser != null}">
+                    <a href="/Userlogin"
+                       class="hidden sm:inline-flex px-6 py-2 rounded-full bg-white text-[#1a1a1a] font-semibold hover:scale-105 transition">
+                        Login
+                    </a>
+                </th:block>
+
+                <button id="mobileToggle"
+                        class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[#d1d5db] hover:bg-white/5 focus:outline-none"
+                        aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation">
+                    <svg id="mobileHamburger" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 8h16M4 16h16"/>
+                    </svg>
+
+                    <svg id="mobileClose" class="w-6 h-6 hidden" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <form th:action="@{/Payment/make}" th:object="${payment}" method="post">
-        <input type="hidden" th:field="*{reserveId}">
-        <input type="hidden" th:field="*{userId}">
-        <input type="hidden" th:field="*{amount}">
+    <div id="mobileMenu" class="md:hidden bg-[#111111] border-t border-[#222] hidden" aria-hidden="true">
+        <div class="px-4 pt-3 pb-4 space-y-2">
 
-        <label>Amount (₹):</label>
-        <input type="number" th:field="*{amount}" readonly />
-        <div th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}" class="error"></div>
+            <a href="/Home" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Home
+            </a>
 
-        <label>Payment Method:</label>
-        <select th:field="*{method}" id="method" onchange="togglePaymentFields()" required>
-            <option value="" disabled selected>Select Payment Method</option>
-            <option value="CARD">Card</option>
-            <option value="CASH">Cash</option>
-        </select>
-        <div th:if="${#fields.hasErrors('method')}" th:errors="*{method}" class="error"></div>
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Features
+            </a>
 
+            <a href="/ContactUs" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Contact Us
+            </a>
 
-        <button type="submit">Pay</button>
-    </form>
-</div>
+            <div class="pt-3 border-t border-[#222]">
 
-<script>
-    function togglePaymentFields() {
-      const method = document.getElementById("method").value;
-      document.getElementById("cardField").style.display = method === 'CARD'? 'block' : 'none';
-    }
-    document.addEventListener("DOMContentLoaded", togglePaymentFields);
-</script>
+                <th:block th:if="${session.loggedUser != null}">
+                    <a href="/profile"
+                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                        Profile
+                    </a>
+                </th:block>
+
+                <th:block th:unless="${session.loggedUser != null}">
+                    <a href="/Userlogin"
+                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                        Login
+                    </a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const toggle = document.getElementById('mobileToggle');
+          const menu = document.getElementById('mobileMenu');
+          const ham = document.getElementById('mobileHamburger') || document.getElementById('hamburger');
+          const closeIcon = document.getElementById('mobileClose') || document.getElementById('close');
+
+          if (!toggle || !menu || !ham || !closeIcon) {
+            console.warn('Mobile menu script: missing element', {
+              toggle: !!toggle, menu: !!menu, ham: !!ham, closeIcon: !!closeIcon
+            });
+            return;
+          }
+
+          menu.classList.add('hidden');
+          ham.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+          menu.setAttribute('aria-hidden', 'true');
+          toggle.setAttribute('aria-expanded', 'false');
+
+          function openMenu() {
+            menu.classList.remove('hidden');
+            ham.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            menu.setAttribute('aria-hidden', 'false');
+            toggle.setAttribute('aria-expanded', 'true');
+          }
+          function closeMenu() {
+            menu.classList.add('hidden');
+            ham.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+            menu.setAttribute('aria-hidden', 'true');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+
+          toggle.addEventListener('click', function (e) {
+            if (menu.classList.contains('hidden')) openMenu(); else closeMenu();
+          });
+
+          window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768 && !menu.classList.contains('hidden')) {
+              closeMenu();
+            }
+          });
+
+          document.addEventListener('click', function (e) {
+            if (window.innerWidth >= 768) return;
+            if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+              closeMenu();
+            }
+          });
+        });
+    </script>
+</header>
+
+<main class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-20 py-10 sm:py-12">
+    <div class="bg-[#14141c] border border-[#2d2d52] rounded-xl p-6 w-full max-w-md">
+
+        <h2 class="text-2xl font-extrabold text-center text-[#c7bfff] mb-6">
+            Complete Your Payment
+        </h2>
+
+        <form th:action="@{/Payment/make}" method="post" class="space-y-4">
+            <input type="hidden" th:field="*{reserveId}">
+            <input type="hidden" th:field="*{userId}">
+
+            <label>Amount (₹)</label>
+            <input type="number" th:field="*{amount}" readonly class="w-full p-2 rounded">
+
+            <label>Payment Method</label>
+            <select th:field="*{method}" class="w-full p-2 rounded">
+                <option value="CARD">Card</option>
+                <option value="CASH">Cash</option>
+            </select>
+
+            <button class="w-full bg-[#7c3aed] py-2 rounded font-bold hover:bg-[#6d28d9]">
+                Pay Now
+            </button>
+        </form>
+    </div>
+</main>
+
+<footer class="text-center py-10 text-[#999] text-sm border-t border-[#333] mt-auto">
+    <div class="flex justify-center flex-wrap gap-6 mb-4">
+        <a href="/Privacy" class="hover:text-white">Privacy Policy</a>
+        <a href="/Terms" class="hover:text-white">Terms of Service</a>
+        <a href="/ContactUs" class="hover:text-white">Contact Us</a>
+    </div>
+    <p>&copy; 2025 Smart_Parking. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
