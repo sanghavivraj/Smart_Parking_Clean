@@ -174,8 +174,8 @@
             Complete Your Payment
         </h2>
 
-        <form th:action="@{/Payment/make}" method="post" class="space-y-4">
-            <input type="hidden" th:field="*{reserveId}">
+        <form th:action="@{/Payment/make}" th:object="${payment}" method="post" class="space-y-4">
+        <input type="hidden" th:field="*{reserveId}">
             <input type="hidden" th:field="*{userId}">
 
             <label>Amount (₹)</label>
