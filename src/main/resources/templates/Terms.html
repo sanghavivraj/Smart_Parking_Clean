@@ -1,10 +1,352 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Terms of Service</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: "Manrope", sans-serif;
+        }
+
+        /* Card hover effect */
+        .terms-card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .terms-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(124, 58, 237, 0.6);
+            box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15);
+        }
+
+        /* Header link underline */
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 0;
+            height: 2px;
+            background-color: #7c3aed;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Footer hover */
+        .footer-link {
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+        }
+    </style>
 </head>
-<body>
+
+<body class="bg-[#0e0e11] text-white min-h-screen flex flex-col">
+
+<!-- ===== HEADER ===== -->
+<header class="w-full bg-transparent top-20 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+
+            <!-- LOGO -->
+            <a href="/Home" class="flex items-center gap-0">
+                <img src="/images/logo.jpeg" alt="ParkSmart Logo" class="w-20 h-20 object-contain rounded" />
+                <span class="text-lg font-bold leading-none">Smart Parking</span>
+            </a>
+
+            <!-- DESKTOP NAVIGATION -->
+            <nav class="hidden md:flex items-center gap-8 text-sm text-[#d1d5db]">
+                <a href="/Home" class="hover:text-white transition">Home</a>
+                <a href="#features" class="hover:text-white transition">Features</a>
+                <a href="/ContactUs" class="hover:text-white transition">Contact Us</a>
+            </nav>
+
+            <!-- RIGHT SIDE BUTTONS -->
+            <div class="flex items-center gap-3">
+
+                <!-- WHEN USER IS LOGGED IN -->
+                <th:block th:if="${session.loggedUser != null}">
+                    <a href="/profile"
+                       class="hidden sm:inline-flex w-10 h-10 rounded-full bg-white items-center justify-center text-[#1a1a1a] hover:scale-105 transition"
+                       aria-label="Profile">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5
+                                  19.5a8.25 8.25 0 1115 0v.75H4.5v-.75z"/>
+                        </svg>
+                    </a>
+                </th:block>
+
+                <!-- WHEN USER IS NOT LOGGED IN -->
+                <th:block th:unless="${session.loggedUser != null}">
+                    <a href="/Userlogin"
+                       class="hidden sm:inline-flex px-6 py-2 rounded-full bg-white text-[#1a1a1a] font-semibold hover:scale-105 transition">
+                        Login
+                    </a>
+                </th:block>
+
+                <!-- MOBILE MENU TOGGLE -->
+                <button id="mobileToggle"
+                        class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[#d1d5db] hover:bg-white/5 focus:outline-none"
+                        aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation">
+                    <svg id="mobileHamburger" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 8h16M4 16h16"/>
+                    </svg>
+
+                    <svg id="mobileClose" class="w-6 h-6 hidden" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== MOBILE MENU ================== -->
+    <div id="mobileMenu" class="md:hidden bg-[#111111] border-t border-[#222] hidden" aria-hidden="true">
+        <div class="px-4 pt-3 pb-4 space-y-2">
+
+            <a href="/Home" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Home
+            </a>
+
+            <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Features
+            </a>
+
+            <a href="/ContactUs" class="block px-3 py-2 rounded-md text-base font-medium text-[#d1d5db] hover:text-white hover:bg-white/5">
+                Contact Us
+            </a>
+
+            <!-- MOBILE LOGIN / PROFILE -->
+            <div class="pt-3 border-t border-[#222]">
+
+                <!-- If user is logged in -->
+                <th:block th:if="${session.loggedUser != null}">
+                    <a href="/profile"
+                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                        Profile
+                    </a>
+                </th:block>
+
+                <!-- If user is NOT logged in -->
+                <th:block th:unless="${session.loggedUser != null}">
+                    <a href="/Userlogin"
+                       class="block w-full text-center px-3 py-2 rounded-md bg-white text-[#1a1a1a] font-semibold">
+                        Login
+                    </a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE MENU SCRIPT (robust & DOM-ready) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const toggle = document.getElementById('mobileToggle');
+          const menu = document.getElementById('mobileMenu');
+          const ham = document.getElementById('mobileHamburger') || document.getElementById('hamburger');
+          const closeIcon = document.getElementById('mobileClose') || document.getElementById('close');
+
+          // If any required element is missing, bail out gracefully
+          if (!toggle || !menu || !ham || !closeIcon) {
+            // Optional: log helpful debug info (remove in prod)
+            console.warn('Mobile menu script: missing element', {
+              toggle: !!toggle, menu: !!menu, ham: !!ham, closeIcon: !!closeIcon
+            });
+            return;
+          }
+
+          // initial state
+          menu.classList.add('hidden');
+          ham.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+          menu.setAttribute('aria-hidden', 'true');
+          toggle.setAttribute('aria-expanded', 'false');
+
+          function openMenu() {
+            menu.classList.remove('hidden');
+            ham.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            menu.setAttribute('aria-hidden', 'false');
+            toggle.setAttribute('aria-expanded', 'true');
+          }
+          function closeMenu() {
+            menu.classList.add('hidden');
+            ham.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+            menu.setAttribute('aria-hidden', 'true');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+
+          toggle.addEventListener('click', function (e) {
+            if (menu.classList.contains('hidden')) openMenu(); else closeMenu();
+          });
+
+          // close on resize to desktop
+          window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768 && !menu.classList.contains('hidden')) {
+              closeMenu();
+            }
+          });
+
+          // close when clicking outside (mobile only)
+          document.addEventListener('click', function (e) {
+            if (window.innerWidth >= 768) return;
+            if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+              closeMenu();
+            }
+          });
+        });
+    </script>
+
+
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="flex-1 px-4 sm:px-6 lg:px-20 py-10 sm:py-12 max-w-[1000px] mx-auto">
+
+    <!-- Title -->
+    <div class="mb-8 sm:mb-10">
+        <h1 class="text-3xl sm:text-4xl font-bold mb-2">
+            <span class="text-[#7c3aed]">Terms</span> of Service
+        </h1>
+        <div class="h-[2px] w-20 sm:w-24 bg-[#7c3aed] mt-3 rounded-full"></div>
+    </div>
+
+    <!-- Terms Sections -->
+    <div class="space-y-6 sm:space-y-8">
+
+        <!-- 1. Acceptance -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">1. Acceptance of Terms</h2>
+            <p class="text-gray-300 text-sm sm:text-base">
+                By creating an account or using Smart Parking, you agree to be bound by these Terms of Service.
+                If you do not agree with any part of these terms, you should not use the platform.
+            </p>
+        </section>
+
+        <!-- 2. Use of Service & Eligibility -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">2. Eligibility & Use of Service</h2>
+            <p class="text-gray-300 text-sm sm:text-base mb-2">
+                You agree to use Smart Parking only for lawful purposes and in accordance with applicable laws.
+            </p>
+            <ul class="list-disc ml-5 sm:ml-6 text-gray-300 text-sm sm:text-base space-y-1">
+                <li>You must provide accurate and complete information.</li>
+                <li>You are responsible for all activity under your account.</li>
+                <li>You must not interfere with system security or other users.</li>
+            </ul>
+        </section>
+
+        <!-- 3. Accounts & Security -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">3. Account & Security</h2>
+            <p class="text-gray-300 text-sm sm:text-base">
+                You are responsible for maintaining the confidentiality of your login credentials and for
+                all activities that occur under your account. Notify us immediately if you suspect unauthorized access.
+            </p>
+        </section>
+
+        <!-- 4. Parking Reservations -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">4. Parking Reservations</h2>
+            <p class="text-gray-300 text-sm sm:text-base mb-2">
+                Smart Parking helps you find and reserve available parking slots. However:
+            </p>
+            <ul class="list-disc ml-5 sm:ml-6 text-gray-300 text-sm sm:text-base space-y-1">
+                <li>Reservations are valid only for the selected time slot and location.</li>
+                <li>Failure to arrive on time may result in cancellation or additional charges (as per rules).</li>
+                <li>Local parking rules and regulations must always be followed.</li>
+            </ul>
+        </section>
+
+        <!-- 5. Payments & Refunds -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">5. Payments & Refunds</h2>
+            <p class="text-gray-300 text-sm sm:text-base mb-2">
+                Payments for reservations are processed through authorized payment gateways.
+            </p>
+            <ul class="list-disc ml-5 sm:ml-6 text-gray-300 text-sm sm:text-base space-y-1">
+                <li>All fees are displayed before confirming a booking.</li>
+                <li>Refunds, if applicable, depend on cancellation time and parking partner rules.</li>
+                <li>Smart Parking is not responsible for delays or failures caused by payment providers.</li>
+            </ul>
+        </section>
+
+        <!-- 6. Prohibited Conduct -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">6. Prohibited Activities</h2>
+            <p class="text-gray-300 text-sm sm:text-base mb-2">
+                You agree not to:
+            </p>
+            <ul class="list-disc ml-5 sm:ml-6 text-gray-300 text-sm sm:text-base space-y-1">
+                <li>Use the service for fraudulent or illegal purposes.</li>
+                <li>Damage, obstruct, or misuse parking spaces.</li>
+                <li>Attempt to hack, reverse engineer, or disrupt the platform.</li>
+            </ul>
+        </section>
+
+        <!-- 7. Limitation of Liability -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">7. Limitation of Liability</h2>
+            <p class="text-gray-300 text-sm sm:text-base">
+                Smart Parking is not responsible for any loss, theft, or damage to vehicles, or
+                for any indirect or consequential damages arising from the use of the platform.
+                Users park at their own risk and must follow all on-site instructions.
+            </p>
+        </section>
+
+        <!-- 8. Changes to Terms -->
+        <section class="terms-card bg-[#14141c] border border-[#23233a] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">8. Changes to These Terms</h2>
+            <p class="text-gray-300 text-sm sm:text-base">
+                We may update these Terms of Service from time to time.
+                Updated versions will be posted on this page, and continued use of the platform
+                means you accept the updated terms.
+            </p>
+        </section>
+
+        <!-- 9. Contact -->
+        <section class="terms-card bg-[#1b1b2d] border border-[#2d2d52] rounded-xl p-5 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-[#c7bfff] mb-2">9. Contact</h2>
+            <p class="text-gray-300 text-sm sm:text-base">
+                For any questions about these Terms of Service, contact us at
+                <span class="text-[#7c3aed] font-semibold">support@smartparking.com</span>.
+            </p>
+        </section>
+
+    </div>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="text-center py-10 text-[#999] text-sm border-t border-[#333] mt-auto">
+    <div class="flex justify-center flex-wrap gap-6 mb-4">
+        <a href="/Privacy" class="hover:text-white">Privacy Policy</a>
+        <a href="/Terms" class="hover:text-white">Terms of Service</a>
+        <a href="/ContactUs" class="hover:text-white">Contact Us</a>
+    </div>
+    <p>&copy; 2025 Smart_Parking. All rights reserved.</p>
+</footer>
 
 </body>
 </html>
